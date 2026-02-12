@@ -70,10 +70,21 @@
   <main>
     <h1>GIRLS UNDER CODE</h1>
     <div class="buttons">
-      <button type="button">Кнопка 1</button>
+      <button id="go-to-app" type="button">Кнопка 1</button>
       <button type="button">Кнопка 2</button>
       <button type="button">Кнопка 3</button>
     </div>
   </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const appButton = document.getElementById("go-to-app");
+
+      if (appButton) {
+        appButton.addEventListener("click", function () {
+          window.location.href = "./girlsundercode_-ai-assistant-vs-agent/dist/index.html";
+        });
+      }
+    });
+  </script>
 </body>
 </html>

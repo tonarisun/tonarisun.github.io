@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GirlsUnderCode - Educational Poster</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050505;
+            color: #e5e5e5;
+            font-family: 'Baloo 2', sans-serif;
+            overflow-x: hidden;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+        .font-baloo {
+            font-family: 'Baloo 2', sans-serif;
+        }
+        .neon-text-pink {
+            text-shadow: 0 0 5px #d946ef, 0 0 10px #d946ef, 0 0 20px #d946ef;
+        }
+        .neon-text-cyan {
+            text-shadow: 0 0 5px #22d3ee, 0 0 10px #22d3ee, 0 0 20px #22d3ee;
+        }
+        
+        /* Side Highlight Hover Effect */
+        .side-glow-hover {
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .side-glow-hover:hover {
+            transform: translateX(10px);
+            text-shadow: 0 0 15px rgba(217, 70, 239, 0.4);
+        }
+        .side-glow-hover::before {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 10%;
+            height: 80%;
+            width: 3px;
+            background: #d946ef;
+            box-shadow: 0 0 15px #d946ef;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .side-glow-hover:hover::before {
+            opacity: 1;
+            left: -10px;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #d946ef;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+        }
+
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(217, 70, 239, 0.4);
+        }
+
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+        }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.41.0"
+  }
+}
+</script>
+</head>
+<body>
+    <div id="root"></div>
+<script type="module" src="/index.tsx"></script>
+</body>
+</html>
