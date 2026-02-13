@@ -65,16 +65,16 @@ const DemoLab: React.FC<DemoLabProps> = ({ initialMode = 'assistant' }) => {
 
   return (
     <section className="py-12 px-6 max-w-5xl mx-auto w-full font-baloo">
-      <div className="flex justify-center mb-10 bg-white/[0.02] backdrop-blur-3xl p-1.5 rounded-full w-fit mx-auto border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      <div className="flex justify-center mb-10 bg-white/[0.02] backdrop-blur-3xl p-2 rounded-full w-fit mx-auto border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
         <button 
           onClick={() => setMode('assistant')}
-          className={`px-8 py-3 rounded-full font-orbitron text-[10px] tracking-widest transition-all ${mode === 'assistant' ? 'bg-pink-600 text-white shadow-[0_0_20px_#d946ef] scale-105' : 'text-gray-500 hover:text-white'}`}
+          className={`px-9 py-3 rounded-full font-orbitron text-[10px] tracking-widest leading-none transition-all ${mode === 'assistant' ? 'bg-yellow-500 text-white shadow-[0_0_20px_#eab308]' : 'text-gray-500 hover:text-white'}`}
         >
           РЕЖИМ АССИСТЕНТА
         </button>
         <button 
           onClick={() => setMode('agent')}
-          className={`px-8 py-3 rounded-full font-orbitron text-[10px] tracking-widest transition-all ${mode === 'agent' ? 'bg-cyan-600 text-white shadow-[0_0_20px_#22d3ee] scale-105' : 'text-gray-500 hover:text-white'}`}
+          className={`px-9 py-3 rounded-full font-orbitron text-[10px] tracking-widest leading-none transition-all ${mode === 'agent' ? 'bg-cyan-600 text-white shadow-[0_0_20px_#22d3ee]' : 'text-gray-500 hover:text-white'}`}
         >
           РЕЖИМ АГЕНТА
         </button>

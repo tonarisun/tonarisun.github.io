@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GIRLS UNDER CODE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap"
+    rel="stylesheet"
+  />
   <style>
     :root {
       --bg: #000000;
@@ -41,6 +47,15 @@
       font-size: clamp(2rem, 6vw, 3.5rem);
       letter-spacing: 0.08em;
       margin-bottom: 32px;
+      font-family: "Orbitron", Arial, sans-serif;
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      background: linear-gradient(90deg, #d946ef 0%, #22d3ee 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 25px rgba(217, 70, 239, 0.9);
     }
 
     .buttons {
@@ -51,6 +66,7 @@
     button {
       width: 100%;
       border: 2px solid var(--btn-border);
+      border-radius: 15px;
       background: var(--btn-bg);
       color: var(--text);
       padding: 14px 18px;
@@ -70,7 +86,7 @@
   <main>
     <h1>GIRLS UNDER CODE</h1>
     <div class="buttons">
-      <button id="go-to-app" type="button">Кнопка 1</button>
+      <button id="go-to-app" type="button">AI ассистенты и агенты</button>
       <button type="button">Кнопка 2</button>
       <button type="button">Кнопка 3</button>
     </div>
