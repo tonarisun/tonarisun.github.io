@@ -89,6 +89,7 @@
       <button id="go-to-app" type="button">AI ассистенты и агенты</button>
       <button id="go-to-quiz" type="button">КВИЗ</button>
       <button id="go-to-botlab" type="button">БОТЛАБ</button>
+      <button id="go-to-lead-for-quiz" type="button">Лид за квиз</button>
     </div>
   </main>
   <script>
@@ -96,6 +97,7 @@
       const appButton = document.getElementById("go-to-app");
       const quizButton = document.getElementById("go-to-quiz");
       const botlabButton = document.getElementById("go-to-botlab");
+      const leadForQuizButton = document.getElementById("go-to-lead-for-quiz");
 
       if (appButton) {
         appButton.addEventListener("click", function () {
@@ -112,6 +114,12 @@
       if (botlabButton) {
         botlabButton.addEventListener("click", function () {
           window.location.href = "./botlab/dist/index.html";
+        });
+      }
+
+      if (leadForQuizButton) {
+        leadForQuizButton.addEventListener("click", function () {
+          window.location.href = "./lead-for-quiz/dist/index.html";
         });
       }
     });
