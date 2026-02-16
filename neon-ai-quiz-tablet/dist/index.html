@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon AI Quiz Tablet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Tilda integration: we don't lock the body scroll anymore */
+        #root {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden; /* Only hide overflow for the quiz container */
+        }
+        
+        .bg-cyber {
+            position: absolute;
+            inset: 0;
+            background-image: url('https://mks-attachments.s3.amazonaws.com/temp/1740410793613-cyberpunk-quiz-bg.png');
+            background-size: cover;
+            background-position: center;
+            filter: brightness(0.4) saturate(1.2);
+            z-index: 0;
+        }
+        
+        .bg-fallback {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: twinkle var(--duration) infinite ease-in-out;
+            z-index: 1;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes border-glow {
+            0%, 100% { border-color: rgba(34, 211, 238, 0.5); box-shadow: 0 0 10px rgba(34, 211, 238, 0.3); }
+            50% { border-color: rgba(236, 72, 153, 0.5); box-shadow: 0 0 10px rgba(236, 72, 153, 0.3); }
+        }
+
+        .animated-neon-button {
+            animation: border-glow 4s infinite;
+        }
+
+        /* Responsive adjustments for Tilda */
+        @media (max-width: 640px) {
+            .glass-panel {
+                border-radius: 1.5rem;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(to bottom, #22d3ee, #ec4899);
+            border-radius: 10px;
+        }
+    </style>
+
+<script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4"
+  }
+}
+</script>
+  <script type="module" crossorigin src="./assets/index-BmX9fH_O.js"></script>
+</head>
+<body style="margin: 0; padding: 0;">
+    <div id="root">
+        <div class="bg-fallback"></div>
+        <div class="bg-cyber"></div>
+    </div>
+</body>
+</html>
