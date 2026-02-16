@@ -56,7 +56,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
       question: "Какую главную задачу должен решать бот?",
       options: [
         { 
-          label: "Отвечать на однотипные вопросы", 
+          label: "Необходимо разгрузить службу поддержки", 
           icon: <Users />, 
           value: "high",
           points: { [BotType.AI_ASSISTANT]: 4, [BotType.LINEAR]: 3 }
