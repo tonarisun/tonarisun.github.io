@@ -5,6 +5,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GirlsUnderCode - Educational Poster</title>
+    <script>
+        (function () {
+            const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+            const isAppRootPath = /^\/girlsundercode_-ai-assistant-vs-agent\/?(index\.html)?$/.test(window.location.pathname);
+            const isDistPath = window.location.pathname.includes('/dist/');
+
+            // In production static hosting, this source entry should redirect to built assets.
+            if (!isLocalhost && isAppRootPath && !isDistPath) {
+                window.location.replace('./dist/index.html');
+            }
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Baloo+2:wght@400;500;600;700;800&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
