@@ -122,8 +122,12 @@ const App: React.FC = () => {
 ⏰ Сроки: ${formData.timing}
     `.trim();
 
-    const encodedText = encodeURIComponent(text);
-    window.open(`https://t.me/codev04ki_bot?text=${encodedText}`, '_blank');
+    const telegram = (window as any).Telegram?.WebApp;
+    if (telegram?.sendData) {
+      telegram.sendData(text);
+    } else {
+      console.warn('Telegram WebApp API недоступен');
+    }
   };
 
   return (
