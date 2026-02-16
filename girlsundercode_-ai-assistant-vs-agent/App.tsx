@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Hero from './components/Hero';
-import DemoLab from './components/DemoLab';
 import EducationSection from './components/EducationSection';
 
 const App: React.FC = () => {
@@ -19,9 +18,6 @@ const App: React.FC = () => {
 
       <div className="fixed inset-0 cyber-grid pointer-events-none opacity-[0.05]"></div>
       
-      {/* Scanning Line Animation */}
-      <div className="fixed top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-pink-500 to-transparent shadow-[0_0_15px_#d946ef] animate-scan z-50 pointer-events-none"></div>
-
       <header className="fixed top-0 left-0 right-0 z-[60] bg-black/60 backdrop-blur-2xl border-b border-white/5">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-2 group cursor-pointer">
@@ -41,19 +37,6 @@ const App: React.FC = () => {
 
         <EducationSection />
 
-        <div className="py-24 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-purple-900/10 to-black pointer-events-none"></div>
-          <div className="max-w-6xl mx-auto px-6 relative z-10">
-            <div className="mb-12 text-center">
-              <h2 className="font-orbitron text-2xl md:text-4xl mb-4 text-white uppercase tracking-tighter italic">
-                DEMO <span className="text-pink-500 drop-shadow-[0_0_10px_#d946ef]">LAB</span>
-              </h2>
-              <p className="text-gray-500 font-mono text-xs uppercase tracking-[0.4em]">Cross-System Capability Simulation</p>
-            </div>
-            <DemoLab />
-          </div>
-        </div>
-
         {/* Finale */}
         <section className="py-48 px-6 relative overflow-hidden text-center">
            <div className="absolute inset-0 opacity-20">
@@ -69,7 +52,7 @@ const App: React.FC = () => {
                 AI-агент — это высокоскоростной двигатель, который разгоняет продуктивность компании в десятки раз.
               </p>
               <div className="pt-8">
-                 <button className="px-16 py-6 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-orbitron font-black text-sm tracking-[0.2em] hover:from-pink-500 hover:to-purple-500 transition-all rounded-none shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-105 active:scale-95 uppercase">
+                 <button className="px-16 py-6 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-orbitron font-black text-sm tracking-[0.2em] hover:from-pink-500 hover:to-purple-500 transition-all rounded-full shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-105 active:scale-95 uppercase">
                     НАЧАТЬ ТРАНСФОРМАЦИЮ
                  </button>
               </div>
@@ -78,15 +61,6 @@ const App: React.FC = () => {
       </main>
       
       <style>{`
-        @keyframes scan {
-          0% { transform: translateY(-10vh); opacity: 0; }
-          10% { opacity: 0.5; }
-          90% { opacity: 0.5; }
-          100% { transform: translateY(110vh); opacity: 0; }
-        }
-        .animate-scan {
-          animation: scan 12s linear infinite;
-        }
         .cyber-grid {
             background-image: linear-gradient(rgba(217, 70, 239, 0.05) 1px, transparent 1px),
                               linear-gradient(90deg, rgba(34, 211, 238, 0.05) 1px, transparent 1px);

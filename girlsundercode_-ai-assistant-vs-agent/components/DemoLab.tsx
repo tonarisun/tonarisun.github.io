@@ -65,16 +65,25 @@ const DemoLab: React.FC<DemoLabProps> = ({ initialMode = 'assistant' }) => {
 
   return (
     <section className="py-12 px-6 max-w-5xl mx-auto w-full font-baloo">
-      <div className="flex justify-center mb-10 bg-white/[0.02] backdrop-blur-3xl p-2 rounded-full w-fit mx-auto border border-white/10 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+      {/* Mode Toggle with Symmetrical Offsets */}
+      <div className="flex justify-center mb-12 bg-white/[0.03] backdrop-blur-3xl p-2 rounded-full w-fit mx-auto border border-white/10 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
         <button 
           onClick={() => setMode('assistant')}
-          className={`px-9 py-3 rounded-full font-orbitron text-[10px] tracking-widest leading-none transition-all ${mode === 'assistant' ? 'bg-yellow-500 text-white shadow-[0_0_20px_#eab308]' : 'text-gray-500 hover:text-white'}`}
+          className={`w-64 py-4 rounded-full font-orbitron text-[11px] font-black tracking-[0.2em] transition-all text-center flex items-center justify-center ${
+            mode === 'assistant' 
+              ? 'bg-pink-600 text-white shadow-[0_0_25px_rgba(217,70,239,0.5)]' 
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
         >
           РЕЖИМ АССИСТЕНТА
         </button>
         <button 
           onClick={() => setMode('agent')}
-          className={`px-9 py-3 rounded-full font-orbitron text-[10px] tracking-widest leading-none transition-all ${mode === 'agent' ? 'bg-cyan-600 text-white shadow-[0_0_20px_#22d3ee]' : 'text-gray-500 hover:text-white'}`}
+          className={`w-64 py-4 rounded-full font-orbitron text-[11px] font-black tracking-[0.2em] transition-all text-center flex items-center justify-center ${
+            mode === 'agent' 
+              ? 'bg-cyan-600 text-white shadow-[0_0_25px_rgba(34,211,238,0.5)]' 
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
         >
           РЕЖИМ АГЕНТА
         </button>
