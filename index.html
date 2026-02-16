@@ -88,13 +88,14 @@
     <div class="buttons">
       <button id="go-to-app" type="button">AI ассистенты и агенты</button>
       <button id="go-to-quiz" type="button">КВИЗ</button>
-      <button type="button">Кнопка 3</button>
+      <button id="go-to-botlab" type="button">БОТЛАБ</button>
     </div>
   </main>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const appButton = document.getElementById("go-to-app");
       const quizButton = document.getElementById("go-to-quiz");
+      const botlabButton = document.getElementById("go-to-botlab");
 
       if (appButton) {
         appButton.addEventListener("click", function () {
@@ -105,6 +106,12 @@
       if (quizButton) {
         quizButton.addEventListener("click", function () {
           window.location.href = "./neon-ai-quiz-tablet/dist/index.html";
+        });
+      }
+
+      if (botlabButton) {
+        botlabButton.addEventListener("click", function () {
+          window.location.href = "./botlab/dist/index.html";
         });
       }
     });
