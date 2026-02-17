@@ -71,6 +71,8 @@
     <div class="test-section">
         <h3>📋 Тесты обработчика</h3>
 
+        <button onclick="testServerConnection()">Проверить сервер</button>
+        <button onclick="setupTelegramMock()">🎭 Включить мок Telegram</button>
         <button onclick="testBotlabOrder()">Заказ разработки бота (BotLab)</button>
         <button onclick="testQuizOrder()">Заказ квиза</button>
         <button onclick="testTransformation()">Начало трансформации</button>
@@ -122,70 +124,159 @@
 
         // Настройка мока
         function setupTelegramMock() {
+            // Создаем мок Telegram WebApp
+            window.Telegram = {
+                WebApp: {
+                    initDataUnsafe: {
+                        user: {
+                            first_name: 'Тестовый',
+                            last_name: 'Пользователь',
+                            id: 123456789
+                        }
+                    },
+                    sendData: function(data) {
+                        log('📤 Мок sendData: ' + data);
+                        alert('Данные отправлены в Telegram (мок): ' + data);
+                    },
+                    close: function() {
+                        log('🔒 Мок close: Приложение закрыто');
+                        alert('Приложение закрыто (мок)');
+                    }
+                }
+            };
+
             log("🎭 Мок Telegram WebApp активирован");
             log("👤 Пользователь: " + JSON.stringify(window.Telegram.WebApp.initDataUnsafe.user));
+            log("Теперь можно тестировать все функции!");
         }
 
         // Импорт утилиты (симуляция)
         async function loadTelegramUtils() {
             try {
-                // Имитируем загрузку утилиты
                 log("🔄 Загрузка telegramUtils...");
 
-                // Создаем функцию sendSignalToAdmin
+                // Создаем функцию sendSignalToAdmin (копия из utils/telegramUtils.ts)
                 window.sendSignalToAdmin = async function(data) {
-                    log("🚀 sendSignalToAdmin вызван с данными:");
-                    log(JSON.stringify(data, null, 2));
+                    console.log('🚀 sendSignalToAdmin called');
+                    console.log('📱 Telegram WebApp available:', !!(window as any).Telegram);
+                    console.log('👤 User data:', (window as any).Telegram?.WebApp?.initDataUnsafe?.user);
+                    console.log('📦 Payload to send:', data);
 
-                    const user = window.Telegram?.WebApp?.initDataUnsafe?.user;
+                    const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
                     const payload = {
                         user_name: user ? user.first_name : "Anonymous",
                         ...data
                     };
 
-                    log("📦 Финальный payload:");
-                    log(JSON.stringify(payload, null, 2));
+                    console.log('📦 Final payload:', payload);
 
                     try {
-                        log("🌐 Отправка запроса на сервер...");
-                        // Use proxy URL for local development
-                        const apiUrl = window.location.hostname === 'localhost'
-                            ? 'http://localhost:3000/api'
-                            : 'https://web-production-8d8bb.up.railway.app';
-                        log("📍 API URL: " + apiUrl);
+                        console.log('🌐 Making fetch request...');
+
+                        // Determine environment more reliably
+                        const isDevelopment = window.location.hostname === 'localhost' ||
+                                             window.location.hostname === '127.0.0.1' ||
+                                             import.meta.env?.DEV === true;
+
+                        const apiUrl = isDevelopment
+                          ? '/api'
+                          : 'https://web-production-8d8bb.up.railway.app';
+
+                        console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
+                        console.log('🔗 API URL:', apiUrl);
+
+                        // Test server availability first (skip in development proxy)
+                        if (!isDevelopment) {
+                          try {
+                            console.log('🔍 Checking server availability...');
+                            const testResponse = await fetch(apiUrl, { method: 'HEAD' });
+                            console.log(`📡 Server check: ${testResponse.status}`);
+                          } catch (testError) {
+                            console.warn('⚠️ Server availability check failed:', testError.message);
+                          }
+                        }
+
                         const response = await fetch(apiUrl, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(payload)
+                          method: 'POST',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(payload)
                         });
 
-                        log(`📡 Ответ сервера: ${response.status} ${response.statusText}`);
+                        console.log(`📡 Response received: ${response.status} ${response.statusText}`);
 
                         if (response.ok) {
-                            log("✅ Сигнал отправлен успешно");
-                            if (window.Telegram?.WebApp) {
-                                log("🔒 Закрытие приложения...");
-                                setTimeout(() => {
-                                    window.Telegram.WebApp.close();
-                                }, 100);
-                            }
+                          console.log("✅ Signal sent successfully");
+                          const responseData = await response.text();
+                          console.log('📄 Response body:', responseData);
                         } else {
-                            log("❌ Ошибка отправки сигнала: " + response.status);
-                            alert("Не удалось отправить сигнал");
-                        }
-                    } catch (error) {
-                        log("💥 Ошибка при отправке: " + error.message);
-                        alert("Ошибка при отправке сигнала");
+                          console.error("❌ Failed to send signal:", response.status);
+                          const errorText = await response.text();
+                          console.error('❌ Error response:', errorText);
 
-                        // Пытаемся закрыть при ошибке
-                        if (window.Telegram?.WebApp) {
-                            setTimeout(() => {
-                                window.Telegram.WebApp.close();
-                            }, 100);
+                          // Try alternative method for Telegram
+                          if ((window as any).Telegram?.WebApp?.sendData) {
+                            console.log('🔄 Falling back to Telegram sendData');
+                            (window as any).Telegram.WebApp.sendData(JSON.stringify(payload));
+                            return;
+                          }
+
+                          alert("Не удалось отправить сигнал");
                         }
-                    }
+
+                        // Always try to close the app after sending the signal
+                        if ((window as any).Telegram?.WebApp) {
+                          console.log('🔒 Attempting to close Telegram WebApp');
+                          setTimeout(() => {
+                            try {
+                              (window as any).Telegram.WebApp.close();
+                              console.log('✅ Telegram WebApp closed successfully');
+                            } catch (closeError) {
+                              console.error('❌ Failed to close WebApp:', closeError);
+                              alert("Приложение не удалось закрыть автоматически");
+                            }
+                          }, 200);
+                        } else {
+                          console.warn('⚠️ Telegram WebApp not available, showing success message');
+                          alert("Данные отправлены! Приложение можно закрыть.");
+                        }
+                      } catch (error) {
+                        console.error('💥 Network error sending signal:', error);
+                        console.error('🔍 Error details:', {
+                          message: error.message,
+                          name: error.name,
+                          stack: error.stack
+                        });
+
+                        // Try alternative methods for Telegram
+                        if ((window as any).Telegram?.WebApp?.sendData) {
+                          console.log('🔄 Network failed, using Telegram sendData as fallback');
+                          try {
+                            (window as any).Telegram.WebApp.sendData(JSON.stringify(payload));
+                            console.log('✅ Fallback successful');
+                            setTimeout(() => (window as any).Telegram.WebApp.close(), 200);
+                            return;
+                          } catch (fallbackError) {
+                            console.error('❌ Fallback also failed:', fallbackError);
+                          }
+                        }
+
+                        alert("Ошибка при отправке сигнала. Попробуйте еще раз.");
+
+                        // Try to close anyway in case of error
+                        if ((window as any).Telegram?.WebApp) {
+                          console.log('🔒 Attempting to close WebApp after error');
+                          setTimeout(() => {
+                            try {
+                              (window as any).Telegram.WebApp.close();
+                              console.log('✅ WebApp closed after error');
+                            } catch (closeError) {
+                              console.error('❌ Failed to close after error:', closeError);
+                            }
+                          }, 500);
+                        }
+                      }
                 };
 
                 log("✅ telegramUtils загружен");
@@ -197,6 +288,23 @@
         }
 
         // Тестовые функции
+        async function testServerConnection() {
+            log("🔍 Проверка подключения к серверу...");
+            try {
+                const response = await fetch('https://web-production-8d8bb.up.railway.app', {
+                    method: 'GET'
+                });
+                log(`📡 GET запрос: ${response.status} ${response.statusText}`);
+
+                if (response.ok) {
+                    const text = await response.text();
+                    log(`📄 Ответ сервера: ${text.substring(0, 100)}...`);
+                }
+            } catch (error) {
+                log("❌ Ошибка подключения: " + error.message);
+            }
+        }
+
         async function testBotlabOrder() {
             await loadTelegramUtils();
             log("🤖 Тест: Заказ разработки бота");

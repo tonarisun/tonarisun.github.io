@@ -1,0 +1,28 @@
+БЫСТРАЯ ПРОВЕРКА КОНСОЛИ TELEGRAM WEBAPP
+============================================
+
+🔥 САМЫЙ ПРОСТОЙ СПОСОБ:
+1. Скачайте Telegram Desktop на компьютер
+2. Войдите под тем же аккаунтом
+3. Откройте WebApp из бота в Telegram Desktop
+4. Нажмите F12 (или Ctrl+Shift+I)
+5. Перейдите на вкладку "Console"
+6. Пройдите квиз и нажмите "Заказать разработку"
+
+📊 ЧТО ДОЛЖНО ПОЯВИТЬСЯ:
+✅ Signal sent successfully
+✅ Telegram WebApp closed successfully
+
+🚨 ЕСЛИ ПРОБЛЕМЫ:
+❌ Failed to send signal → сервер не отвечает
+💥 Network error → CORS или сеть
+⚠️ Telegram WebApp not available → не в Telegram
+
+🧪 РУЧНОЕ ТЕСТИРОВАНИЕ:
+Вставьте в консоль:
+testTelegramSend({
+  service_type: "bot_development_order",
+  action: "order_bot_development"
+});
+
+📖 ПОДРОБНАЯ ИНСТРУКЦИЯ: telegram-console-guide.html

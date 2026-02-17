@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ЭКСТРЕННАЯ ОТЛАДКА</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .code { background: #111; padding: 15px; border: 1px solid #0f0; margin: 10px 0; white-space: pre-wrap; }
+        .error { color: #f00; }
+        .success { color: #0f0; }
+        button { background: #0f0; color: #000; border: none; padding: 10px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>🚨 ЭКСТРЕННАЯ ОТЛАДКА TELEGRAM WEBAPP</h1>
+
+    <div class="error">
+        ⚠️ КРИТИЧНО: Вставьте код в консоль Telegram WebApp!
+    </div>
+
+    <h2>📋 ШАГИ:</h2>
+    <ol>
+        <li>Откройте <strong>https://web.telegram.org</strong></li>
+        <li>Найдите бота и откройте <strong>WebApp</strong></li>
+        <li>Нажмите <strong>F12</strong> → вкладка <strong>Console</strong></li>
+        <li><strong>Вставьте ВЕСЬ этот код:</strong></li>
+    </ol>
+
+    <div class="code" id="debugCode">// ЭКСТРЕННЫЙ ДЕБАГ КОД - ВСТАВИТЬ В КОНСОЛЬ
+console.log('🚨 === ЭКСТРЕННАЯ ОТЛАДКА ===');
+console.log('📍 URL:', window.location.href);
+console.log('🔍 Telegram object:', !!window.Telegram);
+console.log('📱 WebApp object:', !!window.Telegram?.WebApp);
+
+if (window.Telegram?.WebApp) {
+    console.log('✅ SUCCESS: Telegram WebApp доступен!');
+    console.log('👤 User:', window.Telegram.WebApp.initDataUnsafe?.user?.first_name);
+    console.log('📤 sendData:', typeof window.Telegram.WebApp.sendData);
+    console.log('🔒 close:', typeof window.Telegram.WebApp.close);
+
+    // Тестовые команды
+    window.DEBUG = {
+        testSend: () => {
+            console.log('📤 Testing sendData...');
+            window.Telegram.WebApp.sendData(JSON.stringify({test: 'emergency_debug'}));
+        },
+        testClose: () => {
+            console.log('🔒 Testing close...');
+            window.Telegram.WebApp.close();
+        },
+        testApp: () => {
+            console.log('🎯 Testing full app flow...');
+            // Имитация того, что делает кнопка
+            const data = {
+                service_type: "bot_development_order",
+                action: "order_bot_development",
+                quiz_result: { bot_type: "LINEAR", title: "Test Bot" }
+            };
+            console.log('📦 Sending:', data);
+            window.Telegram.WebApp.sendData(JSON.stringify(data));
+            setTimeout(() => window.Telegram.WebApp.close(), 1000);
+        }
+    };
+
+    console.log('🛠️ Команды: DEBUG.testSend(), DEBUG.testClose(), DEBUG.testApp()');
+
+} else {
+    console.log('❌ FAIL: Telegram WebApp НЕДОСТУПЕН!');
+    console.log('🔍 Ищем Telegram API...');
+
+    // Поиск в window
+    for (let key in window) {
+        if (key.toLowerCase().includes('telegram')) {
+            console.log('📍 Found:', key, '=', window[key]);
+        }
+    }
+
+    console.log('💡 Убедитесь, что вы в WebApp бота!');
+}</div>
+
+    <button onclick="copyCode()">📋 Скопировать код в буфер</button>
+
+    <h2>🎯 ЧТО ДОЛЖНО БЫТЬ:</h2>
+    <div class="success">
+        ✅ SUCCESS: Telegram WebApp доступен!<br>
+        👤 User: [Имя]<br>
+        🛠️ Команды: DEBUG.testSend(), DEBUG.testClose(), DEBUG.testApp()
+    </div>
+
+    <h2>🚨 ЕСЛИ НЕ РАБОТАЕТ:</h2>
+    <div class="error">
+        ❌ FAIL: Telegram WebApp НЕДОСТУПЕН!<br>
+        🔍 Ищем Telegram API...<br>
+        💡 Убедитесь, что вы в WebApp бота!
+    </div>
+
+    <h2>🧪 ТЕСТИРОВАНИЕ:</h2>
+    <p>После вставки кода выполните:</p>
+    <div class="code">
+DEBUG.testApp()  // Тест полной работы приложения
+    </div>
+
+    <script>
+        function copyCode() {
+            const code = document.getElementById('debugCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Код скопирован! Вставьте его в консоль Telegram WebApp');
+            });
+        }
+    </script>
+</body>
+</html>

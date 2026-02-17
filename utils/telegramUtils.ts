@@ -8,14 +8,33 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
   };
 
   try {
-    console.log('Sending signal to admin:', payload);
+    console.log('🚀 sendSignalToAdmin called');
+    console.log('📱 Telegram WebApp available:', !!(window as any).Telegram?.WebApp);
+    console.log('👤 User data:', user);
+    console.log('📦 Payload to send:', payload);
 
-    // Use proxy in development, direct URL in production
-    const apiUrl = import.meta.env.DEV
+    // Determine environment more reliably
+    const isDevelopment = window.location.hostname === 'localhost' ||
+                         window.location.hostname === '127.0.0.1' ||
+                         import.meta.env?.DEV === true;
+
+    const apiUrl = isDevelopment
       ? '/api'
       : 'https://web-production-8d8bb.up.railway.app';
 
-    console.log('Using API URL:', apiUrl);
+    console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
+    console.log('🔗 API URL:', apiUrl);
+
+    // Test server availability first (skip in development proxy)
+    if (!isDevelopment) {
+      try {
+        console.log('🔍 Checking server availability...');
+        const testResponse = await fetch(apiUrl, { method: 'HEAD' });
+        console.log(`📡 Server check: ${testResponse.status}`);
+      } catch (testError) {
+        console.warn('⚠️ Server availability check failed:', testError.message);
+      }
+    }
 
     const response = await fetch(apiUrl, {
       method: 'POST',
@@ -25,33 +44,77 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
       body: JSON.stringify(payload)
     });
 
-    console.log('Response status:', response.status);
+    console.log(`📡 Response received: ${response.status} ${response.statusText}`);
 
     if (response.ok) {
-      console.log('Signal sent successfully');
+      console.log("✅ Signal sent successfully");
+      const responseData = await response.text();
+      console.log('📄 Response body:', responseData);
     } else {
-      console.error('Failed to send signal:', response.status);
+      console.error("❌ Failed to send signal:", response.status);
+      const errorText = await response.text();
+      console.error('❌ Error response:', errorText);
+
+      // Try alternative method for Telegram
+      if ((window as any).Telegram?.WebApp?.sendData) {
+        console.log('🔄 Falling back to Telegram sendData');
+        (window as any).Telegram.WebApp.sendData(JSON.stringify(payload));
+        return;
+      }
+
       alert("Не удалось отправить сигнал");
     }
 
     // Always try to close the app after sending the signal
     if ((window as any).Telegram?.WebApp) {
-      console.log('Closing Telegram WebApp');
+      console.log('🔒 Attempting to close Telegram WebApp');
       setTimeout(() => {
-        (window as any).Telegram.WebApp.close();
-      }, 100); // Small delay to ensure data is processed
+        try {
+          (window as any).Telegram.WebApp.close();
+          console.log('✅ Telegram WebApp closed successfully');
+        } catch (closeError) {
+          console.error('❌ Failed to close WebApp:', closeError);
+          alert("Приложение не удалось закрыть автоматически");
+        }
+      }, 200);
     } else {
-      console.warn('Telegram WebApp not available, showing success message');
+      console.warn('⚠️ Telegram WebApp not available, showing success message');
       alert("Данные отправлены! Приложение можно закрыть.");
     }
   } catch (error) {
-    console.error('Error sending signal:', error);
-    alert("Ошибка при отправке сигнала");
+    console.error('💥 Network error sending signal:', error);
+    console.error('🔍 Error details:', {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    });
+
+    // Try alternative methods for Telegram
+    if ((window as any).Telegram?.WebApp?.sendData) {
+      console.log('🔄 Network failed, using Telegram sendData as fallback');
+      try {
+        (window as any).Telegram.WebApp.sendData(JSON.stringify(payload));
+        console.log('✅ Fallback successful');
+        setTimeout(() => (window as any).Telegram.WebApp.close(), 200);
+        return;
+      } catch (fallbackError) {
+        console.error('❌ Fallback also failed:', fallbackError);
+      }
+    }
+
+    alert("Ошибка при отправке сигнала. Попробуйте еще раз.");
 
     // Try to close anyway in case of error
     if ((window as any).Telegram?.WebApp) {
-      console.log('Closing Telegram WebApp after error');
-      (window as any).Telegram.WebApp.close();
+      console.log('🔒 Attempting to close WebApp after error');
+      setTimeout(() => {
+        try {
+          (window as any).Telegram.WebApp.close();
+          console.log('✅ WebApp closed after error');
+        } catch (closeError) {
+          console.error('❌ Failed to close after error:', closeError);
+        }
+      }, 500);
     }
   }
 };

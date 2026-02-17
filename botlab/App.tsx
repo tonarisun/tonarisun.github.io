@@ -29,6 +29,16 @@ const App: React.FC = () => {
 
   useEffect(() => {
     setIsLoaded(true);
+
+    // Initialize Telegram WebApp
+    if (window.Telegram?.WebApp) {
+      console.log('🚀 Initializing Telegram WebApp...');
+      window.Telegram.WebApp.ready();
+      console.log('✅ Telegram WebApp initialized');
+    } else {
+      console.log('⚠️ Telegram WebApp not available');
+    }
+
     // Initialize Telegram utilities globally
     initTelegramUtils();
   }, []);
@@ -120,8 +130,15 @@ const App: React.FC = () => {
       const result = botResults[quizResult];
       
       const handleOrder = async () => {
-        console.log('Starting order process for:', result.title);
+        console.log('🎯 Starting order process for:', result.title);
+        console.log('📊 Quiz result data:', {
+          type: result.type,
+          title: result.title,
+          description: result.description
+        });
+
         try {
+          console.log('📤 Calling sendSignalToAdmin...');
           await sendSignalToAdmin({
             service_type: "bot_development_order",
             action: "order_bot_development",
@@ -132,9 +149,11 @@ const App: React.FC = () => {
             },
             result_text: `Результат опроса: ${result.title} - ${result.description}`
           });
-          console.log('Order process completed');
+          console.log('✅ Order process completed successfully');
         } catch (error) {
-          console.error('Error in handleOrder:', error);
+          console.error('❌ Error in handleOrder:', error);
+          // Show user-friendly error message
+          alert('Произошла ошибка при отправке заказа. Попробуйте еще раз.');
         }
       };
 

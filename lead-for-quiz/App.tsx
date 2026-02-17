@@ -22,6 +22,15 @@ const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('poster');
 
   useEffect(() => {
+    // Initialize Telegram WebApp
+    if (window.Telegram?.WebApp) {
+      console.log('🚀 Initializing Telegram WebApp...');
+      window.Telegram.WebApp.ready();
+      console.log('✅ Telegram WebApp initialized');
+    } else {
+      console.log('⚠️ Telegram WebApp not available');
+    }
+
     // Initialize Telegram utilities globally
     initTelegramUtils();
   }, []);

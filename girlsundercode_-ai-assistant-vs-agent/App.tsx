@@ -6,6 +6,15 @@ import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
 const App: React.FC = () => {
   useEffect(() => {
+    // Initialize Telegram WebApp
+    if (window.Telegram?.WebApp) {
+      console.log('🚀 Initializing Telegram WebApp...');
+      window.Telegram.WebApp.ready();
+      console.log('✅ Telegram WebApp initialized');
+    } else {
+      console.log('⚠️ Telegram WebApp not available');
+    }
+
     // Initialize Telegram utilities globally
     initTelegramUtils();
   }, []);
