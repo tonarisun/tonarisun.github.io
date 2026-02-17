@@ -1,9 +1,22 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Hero from './components/Hero';
 import EducationSection from './components/EducationSection';
+import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    // Initialize Telegram utilities globally
+    initTelegramUtils();
+  }, []);
+
+  const handleTransformationClick = async () => {
+    await sendSignalToAdmin({
+      service_type: "ai_transformation",
+      action: "start_transformation"
+    });
+  };
+
   return (
     <div className="min-h-screen bg-[#020205] relative selection:bg-pink-500/30">
       {/* Immersive Starry Galaxy Background Overlay */}
@@ -52,7 +65,10 @@ const App: React.FC = () => {
                 AI-агент — это высокоскоростной двигатель, который разгоняет продуктивность компании в десятки раз.
               </p>
               <div className="pt-8">
-                 <button className="px-16 py-6 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-orbitron font-black text-sm tracking-[0.2em] hover:from-pink-500 hover:to-purple-500 transition-all rounded-full shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-105 active:scale-95 uppercase">
+                 <button
+                   onClick={handleTransformationClick}
+                   className="px-16 py-6 bg-gradient-to-r from-pink-600 to-purple-600 text-white font-orbitron font-black text-sm tracking-[0.2em] hover:from-pink-500 hover:to-purple-500 transition-all rounded-full shadow-[0_0_30px_rgba(217,70,239,0.3)] hover:scale-105 active:scale-95 uppercase"
+                 >
                     НАЧАТЬ ТРАНСФОРМАЦИЮ
                  </button>
               </div>

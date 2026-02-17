@@ -1,35 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Bot, 
-  Cpu, 
-  Zap, 
-  Clock, 
-  Users, 
-  TrendingUp, 
-  MessageSquare, 
-  Layers, 
-  ShieldCheck, 
-  ChevronRight, 
-  BrainCircuit, 
-  Terminal, 
-  Code2, 
-  Rocket, 
-  RefreshCcw, 
-  Sparkles 
+import {
+  Bot,
+  Cpu,
+  Zap,
+  Clock,
+  Users,
+  TrendingUp,
+  MessageSquare,
+  Layers,
+  ShieldCheck,
+  ChevronRight,
+  BrainCircuit,
+  Terminal,
+  Code2,
+  Rocket,
+  RefreshCcw,
+  Sparkles
 } from 'lucide-react';
 import Quiz from './components/Quiz';
 import { BotType, BotResult } from './types';
+import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
-// Interface for Telegram WebApp
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        sendData: (data: string) => void;
-      };
-    };
-  }
-}
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
@@ -38,6 +29,8 @@ const App: React.FC = () => {
 
   useEffect(() => {
     setIsLoaded(true);
+    // Initialize Telegram utilities globally
+    initTelegramUtils();
   }, []);
 
   const botResults: Record<BotType, BotResult> = {
@@ -126,15 +119,17 @@ const App: React.FC = () => {
     if (quizResult) {
       const result = botResults[quizResult];
       
-      const handleOrder = () => {
-        if (window.Telegram?.WebApp) {
-          window.Telegram.WebApp.sendData(JSON.stringify({
-            botType: result.type,
-            title: result.title
-          }));
-        } else {
-          console.warn('Telegram WebApp environment not detected');
-        }
+      const handleOrder = async () => {
+        await sendSignalToAdmin({
+          service_type: "bot_development_order",
+          action: "order_bot_development",
+          quiz_result: {
+            bot_type: result.type,
+            title: result.title,
+            description: result.description
+          },
+          result_text: `Результат опроса: ${result.title} - ${result.description}`
+        });
       };
 
       return (

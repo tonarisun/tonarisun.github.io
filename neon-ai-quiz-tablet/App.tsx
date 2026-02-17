@@ -1,11 +1,17 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import StarBackground from './components/StarBackground';
 import { QuizData } from './types';
 import { QUIZ_QUESTIONS } from './constants';
 import { generateRecommendation } from './services/geminiService';
+import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
 const App: React.FC = () => {
+  useEffect(() => {
+    // Initialize Telegram utilities globally
+    initTelegramUtils();
+  }, []);
+
   const [formData, setFormData] = useState<QuizData>({
     occupation: '',
     languages: [],
@@ -107,27 +113,28 @@ const App: React.FC = () => {
     }
   };
 
-  const sendToTelegram = () => {
-    const text = `
-🆕 НОВЫЙ ОПРОС ИЗ КВИЗА:
-👤 Занятие: ${formData.occupation}
-🌐 Языки: ${formData.languages.join(', ')} ${formData.languagesOther ? `(${formData.languagesOther})` : ''}
-🎯 Приоритет: ${formData.primaryNeed} ${formData.primaryNeedOther ? `(${formData.primaryNeedOther})` : ''}
-📍 Платформы: ${formData.platforms.join(', ')} ${formData.platformsOther ? `(${formData.platformsOther})` : ''}
-🛠 Функции: ${formData.functions.join(', ')}
-🔗 Интеграции: ${formData.integrations.join(', ')}
-📈 База: ${formData.customerBase}
-📊 Объём: ${formData.volume}
-🤖 ИИ-Консультант: ${formData.aiConsultant}
-⏰ Сроки: ${formData.timing}
-    `.trim();
-
-    const telegram = (window as any).Telegram?.WebApp;
-    if (telegram?.sendData) {
-      telegram.sendData(text);
-    } else {
-      console.warn('Telegram WebApp API недоступен');
-    }
+  const sendToTelegram = async () => {
+    await sendSignalToAdmin({
+      service_type: "quiz_result",
+      action: "send_quiz_result",
+      quiz_data: {
+        occupation: formData.occupation,
+        languages: formData.languages,
+        languages_other: formData.languagesOther,
+        primary_need: formData.primaryNeed,
+        primary_need_other: formData.primaryNeedOther,
+        platforms: formData.platforms,
+        platforms_other: formData.platformsOther,
+        functions: formData.functions,
+        functions_other: formData.functionsOther,
+        integrations: formData.integrations,
+        customer_base: formData.customerBase,
+        volume: formData.volume,
+        ai_consultant: formData.aiConsultant,
+        timing: formData.timing,
+        recommendation: recommendation
+      }
+    });
   };
 
   return (

@@ -1,0 +1,38 @@
+Structure
+project/
+├── index.html
+├── css/style.css
+├── js/main.js
+└── images/
+HTML
+
+Use semantic tags: <header> <main> <section> <footer> <nav>
+Always include alt on images
+Link CSS in <head>, JS before </body>
+
+CSS
+
+Define all colors, fonts, spacing as CSS variables in :root
+Mobile-first: base styles for mobile, expand with @media (min-width: ...)
+Layout with Flexbox or Grid — no float, no !important
+Spacing in multiples of 4px/8px — no magic numbers
+
+JavaScript
+
+Vanilla JS only — no jQuery
+Always const/let, never var
+No inline onclick="" — attach listeners in JS
+Wrap code in DOMContentLoaded
+
+Git
+
+One commit = one change
+Meaningful messages only: Add mobile nav not fix
+Always .gitignore: node_modules/, .DS_Store
+
+Never
+
+position: absolute for page layout
+Fixed height on blocks — use min-height or padding
+Duplicate styles — extract to variable or class
+!important

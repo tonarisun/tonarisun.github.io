@@ -1,36 +1,39 @@
 
-import React, { useState } from 'react';
-import { 
-  Zap, 
-  Target, 
-  TrendingUp, 
-  BrainCircuit, 
-  Layers, 
+import React, { useState, useEffect } from 'react';
+import {
+  Zap,
+  Target,
+  TrendingUp,
+  BrainCircuit,
+  Layers,
   MessageSquare,
-  ArrowRight, 
-  CheckCircle2, 
-  PieChart, 
-  MousePointer2, 
-  Sparkles, 
-  BarChart3, 
+  ArrowRight,
+  CheckCircle2,
+  PieChart,
+  MousePointer2,
+  Sparkles,
+  BarChart3,
   Lightbulb
 } from 'lucide-react';
 import { QuizType, TabType } from './types';
+import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
 const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('poster');
 
+  useEffect(() => {
+    // Initialize Telegram utilities globally
+    initTelegramUtils();
+  }, []);
+
   const neonText = "text-transparent bg-clip-text bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-400 font-bold";
   const glassCard = "backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl overflow-hidden transition-all duration-500";
 
-  const handleOrderClick = () => {
-    const data = JSON.stringify({ service_type: "quiz" });
-    // Check if running inside Telegram WebApp
-    if ((window as any).Telegram?.WebApp) {
-      (window as any).Telegram.WebApp.sendData(data);
-    } else {
-      console.log("Order button clicked (Telegram WebApp not detected):", data);
-    }
+  const handleOrderClick = async () => {
+    await sendSignalToAdmin({
+      service_type: "quiz",
+      action: "order_quiz"
+    });
   };
 
   const quizTypes: QuizType[] = [
