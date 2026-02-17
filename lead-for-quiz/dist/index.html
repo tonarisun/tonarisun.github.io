@@ -14,6 +14,32 @@
   <!-- Telegram WebApp Script -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+  <!-- Initialize WebApp immediately after script loads -->
+  <script>
+      // Wait for Telegram WebApp to be ready
+      function initTelegramWebApp() {
+          if (window.Telegram && window.Telegram.WebApp) {
+              console.log('🚀 Telegram WebApp script loaded successfully');
+              window.Telegram.WebApp.ready();
+              console.log('✅ Telegram WebApp initialized');
+          } else {
+              console.log('⚠️ Telegram WebApp script loaded but API not available');
+              // Try again in a moment
+              setTimeout(initTelegramWebApp, 100);
+          }
+      }
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initTelegramWebApp);
+      } else {
+          initTelegramWebApp();
+      }
+
+      // Also try on window load
+      window.addEventListener('load', initTelegramWebApp);
+  </script>
+
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/svg+xml" href="./app-icon.svg">
   <link rel="apple-touch-icon" href="./app-icon.svg">

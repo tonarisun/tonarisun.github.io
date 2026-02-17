@@ -9,6 +9,32 @@
     <!-- Telegram WebApp Script -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 
+    <!-- Initialize WebApp immediately after script loads -->
+    <script>
+        // Wait for Telegram WebApp to be ready
+        function initTelegramWebApp() {
+            if (window.Telegram && window.Telegram.WebApp) {
+                console.log('🚀 Telegram WebApp script loaded successfully');
+                window.Telegram.WebApp.ready();
+                console.log('✅ Telegram WebApp initialized');
+            } else {
+                console.log('⚠️ Telegram WebApp script loaded but API not available');
+                // Try again in a moment
+                setTimeout(initTelegramWebApp, 100);
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTelegramWebApp);
+        } else {
+            initTelegramWebApp();
+        }
+
+        // Also try on window load
+        window.addEventListener('load', initTelegramWebApp);
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
