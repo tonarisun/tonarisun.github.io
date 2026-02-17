@@ -38,6 +38,26 @@
 
         // Also try on window load
         window.addEventListener('load', initTelegramWebApp);
+
+        // Additional initialization for InlineKeyboardButton WebApps
+        // They may need more time to initialize
+        setTimeout(() => {
+            if (!window.Telegram?.WebApp) {
+                console.log('🔄 Retrying Telegram WebApp initialization...');
+                initTelegramWebApp();
+            }
+        }, 2000);
+
+        // Check for start_param (common in InlineKeyboardButton WebApps)
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+                if (startParam) {
+                    console.log('📋 WebApp opened with start_param:', startParam);
+                    // You can use start_param to determine the context
+                }
+            }, 500);
+        });
     </script>
 
     <link rel="manifest" href="./manifest.webmanifest">

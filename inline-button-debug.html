@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Отладка InlineKeyboardButton WebApp</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #000; color: #0f0; }
+        .info { background: #111; padding: 15px; margin: 10px 0; border: 1px solid #0f0; }
+        .error { color: #f00; }
+        .code { background: #222; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Отладка WebApp из InlineKeyboardButton</h1>
+
+    <div class="info">
+        <strong>Проблема:</strong> WebApp открывается из InlineKeyboardButton, а не из кнопки меню бота
+    </div>
+
+    <h2>📊 Разница между способами открытия:</h2>
+
+    <div class="info">
+        <h3>Кнопка меню (Menu Button):</h3>
+        <ul>
+            <li>Постоянная кнопка в интерфейсе чата</li>
+            <li>Открывает WebApp в том же окне</li>
+            <li>Telegram API полностью доступен</li>
+            <li>sendData() и close() работают корректно</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <h3>InlineKeyboardButton:</h3>
+        <ul>
+            <li>Кнопка в сообщении бота</li>
+            <li>Может открываться в новой вкладке</li>
+            <li>API может быть ограничен</li>
+            <li>Нужна дополнительная инициализация</li>
+        </ul>
+    </div>
+
+    <h2>🛠️ Проверка в вашем случае:</h2>
+
+    <div class="code">
+// В консоли WebApp проверьте:
+console.log('Window location:', window.location.href);
+console.log('Referrer:', document.referrer);
+console.log('Telegram object:', !!window.Telegram);
+console.log('WebApp object:', !!window.Telegram?.WebApp);
+console.log('initData:', window.Telegram?.WebApp?.initData);
+console.log('start_param:', window.Telegram?.WebApp?.initDataUnsafe?.start_param);
+    </div>
+
+    <h2>💡 Возможные решения:</h2>
+
+    <h3>1. Проверьте настройки кнопки в коде бота</h3>
+    <div class="code">
+# Вместо InlineKeyboardButton используйте Menu Button
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+
+# Неправильно (открывает в новой вкладке):
+keyboard = [[InlineKeyboardButton("Открыть WebApp", web_app=WebAppInfo(url="..."))]]
+
+# Правильно (использует Menu Button):
+# Настройте через BotFather: /setmenubutton
+    </div>
+
+    <h3>2. Если InlineKeyboardButton необходим:</h3>
+    <div class="code">
+// Добавьте в WebApp дополнительную проверку:
+window.addEventListener('load', function() {
+    // Повторная инициализация через 1 секунду
+    setTimeout(() => {
+        if (window.Telegram?.WebApp) {
+            window.Telegram.WebApp.ready();
+            console.log('WebApp re-initialized for InlineKeyboardButton');
+        }
+    }, 1000);
+});
+    </div>
+
+    <h3>3. Проверьте параметры запуска</h3>
+    <div class="code">
+// WebApp из InlineKeyboardButton может иметь start_param
+const startParam = window.Telegram?.WebApp?.initDataUnsafe?.start_param;
+console.log('Start param:', startParam);
+
+// Это может помочь определить контекст открытия
+    </div>
+
+    <h2>🎯 Рекомендации:</h2>
+
+    <div class="info">
+        <strong>Лучше использовать Menu Button:</strong>
+        <ul>
+            <li>Более надежная работа</li>
+            <li>Полный доступ к Telegram API</li>
+            <li>Лучший UX</li>
+        </ul>
+    </div>
+
+    <h2>📞 Что делать дальше:</h2>
+
+    <ol>
+        <li><strong>Проверьте код бота</strong> - использует ли он InlineKeyboardButton?</li>
+        <li><strong>Если да</strong> - измените на Menu Button через BotFather</li>
+        <li><strong>Если обязательно нужен InlineKeyboardButton</strong> - добавьте дополнительную инициализацию</li>
+        <li><strong>Протестируйте</strong> после изменений</li>
+    </ol>
+</body>
+</html>

@@ -33,6 +33,14 @@
 
         // Also try on window load
         window.addEventListener('load', initTelegramWebApp);
+
+        // Additional initialization for InlineKeyboardButton WebApps
+        setTimeout(() => {
+            if (!window.Telegram?.WebApp) {
+                console.log('🔄 Retrying Telegram WebApp initialization...');
+                initTelegramWebApp();
+            }
+        }, 2000);
     </script>
 
     <script src="https://cdn.tailwindcss.com"></script>

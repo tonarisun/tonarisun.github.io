@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Проверка настроек бота в BotFather</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
+        .section { background: white; padding: 20px; margin: 20px 0; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .command { background: #e7f3ff; border-left: 4px solid #0066cc; padding: 15px; margin: 10px 0; font-family: monospace; }
+        .warning { background: #fff3cd; border: 1px solid #ffeaa7; color: #856404; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 15px; border-radius: 4px; margin: 15px 0; }
+        .step { background: #f8f9fa; border: 1px solid #dee2e6; padding: 15px; border-radius: 4px; margin: 10px 0; }
+        .step-number { display: inline-block; background: #007bff; color: white; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; margin-right: 10px; }
+        code { background: #f1f3f4; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Проверка настроек бота в BotFather</h1>
+
+    <div class="warning">
+        <strong>Важно!</strong> Неправильные настройки бота - самая распространенная причина проблем с WebApp.
+    </div>
+
+    <div class="section">
+        <h2>📱 Как открыть BotFather</h2>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            Откройте Telegram и найдите <strong>@BotFather</strong>
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            Отправьте команду <code>/mybots</code> чтобы увидеть список ваших ботов
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            Выберите нужного бота из списка
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🔍 Проверка основных настроек</h2>
+
+        <h3>1. Проверка токена бота</h3>
+        <div class="command">
+/mybots → [выберите бота] → Bot Settings → API Token
+        </div>
+        <p><strong>Что проверить:</strong> Токен должен быть активным и не просроченным</p>
+
+        <h3>2. Проверка Web App URL</h3>
+        <div class="command">
+/mybots → [выберите бота] → Bot Settings → Menu Button → Web App
+        </div>
+        <p><strong>Должен быть:</strong> <code>https://tonarisun.github.io/botlab/</code> (или другое ваше приложение)</p>
+
+        <h3>3. Проверка Inline Mode</h3>
+        <div class="command">
+/mybots → [выберите бота] → Bot Settings → Inline Mode
+        </div>
+        <p><strong>Должен быть:</strong> Inline mode <strong>ON</strong></p>
+    </div>
+
+    <div class="section">
+        <h2>🛠️ Настройка Web App (если не настроена)</h2>
+
+        <h3>Шаг 1: Включение Menu Button</h3>
+        <div class="command">
+/setmenubutton
+        </div>
+        <p>BotFather спросит: "Choose a bot to edit:"</p>
+
+        <h3>Шаг 2: Выбор бота</h3>
+        <p>Выберите вашего бота из списка</p>
+
+        <h3>Шаг 3: Настройка кнопки меню</h3>
+        <p>BotFather предложит варианты:</p>
+        <ul>
+            <li><strong>"Web App"</strong> - выберите этот вариант</li>
+        </ul>
+
+        <h3>Шаг 4: Ввод URL Web App</h3>
+        <p>Введите URL вашего приложения на GitHub Pages:</p>
+        <div class="command">
+https://tonarisun.github.io/botlab/
+        </div>
+        <p><strong>Для других приложений:</strong></p>
+        <ul>
+            <li><code>https://tonarisun.github.io/lead-for-quiz/</code></li>
+            <li><code>https://tonarisun.github.io/neon-ai-quiz-tablet/</code></li>
+            <li><code>https://tonarisun.github.io/girlsundercode_-ai-assistant-vs-agent/</code></li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📋 Полная проверка всех настроек</h2>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            <strong>Имя и username бота:</strong><br>
+            Проверьте, что бот имеет правильное имя и username
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            <strong>Description (описание):</strong><br>
+            Должно быть заполнено и описывать назначение бота
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            <strong>About (о боте):</strong><br>
+            Краткое описание функций бота
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            <strong>Botpic (аватар):</strong><br>
+            Рекомендуется установить аватарку бота
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            <strong>Commands (команды):</strong><br>
+            Настройте команды бота через /setcommands
+        </div>
+
+        <div class="step">
+            <span class="step-number">6</span>
+            <strong>Web App URL:</strong><br>
+            Должен вести на ваш GitHub Pages URL
+        </div>
+
+        <div class="step">
+            <span class="step-number">7</span>
+            <strong>Inline mode:</strong><br>
+            Должен быть включен (ON)
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🎯 Тестирование после настройки</h2>
+
+        <div class="step">
+            <span class="step-number">1</span>
+            Откройте чат с ботом в Telegram
+        </div>
+
+        <div class="step">
+            <span class="step-number">2</span>
+            В меню бота должна появиться кнопка Web App
+        </div>
+
+        <div class="step">
+            <span class="step-number">3</span>
+            Нажмите на кнопку Web App
+        </div>
+
+        <div class="step">
+            <span class="step-number">4</span>
+            Приложение должно открыться в новой вкладке/окне
+        </div>
+
+        <div class="step">
+            <span class="step-number">5</span>
+            В консоли должны быть логи инициализации Telegram WebApp
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>🚨 Возможные проблемы и решения</h2>
+
+        <h3>Web App не открывается</h3>
+        <div class="error">
+            <strong>Причина:</strong> Неправильный URL<br>
+            <strong>Решение:</strong> Проверьте, что URL ведет на index.html вашего приложения
+        </div>
+
+        <h3>Приложение открывается, но Telegram API недоступен</h3>
+        <div class="error">
+            <strong>Причина:</strong> Приложение не инициализируется как WebApp<br>
+            <strong>Решение:</strong> Проверьте, что скрипт telegram-web-app.js загружается
+        </div>
+
+        <h3>Кнопка Web App не отображается</h3>
+        <div class="error">
+            <strong>Причина:</strong> Menu Button не настроена<br>
+            <strong>Решение:</strong> Выполните /setmenubutton и настройте Web App
+        </div>
+
+        <h3>Web App открывается в браузере, а не в Telegram</h3>
+        <div class="warning">
+            <strong>Причина:</strong> Пользователь открыл ссылку вручную<br>
+            <strong>Решение:</strong> Объяснить, что нужно нажимать кнопку в меню бота
+        </div>
+    </div>
+
+    <div class="success">
+        <h3>✅ Правильно настроенный бот должен:</h3>
+        <ul>
+            <li>Иметь активный API токен</li>
+            <li>Иметь настроенную кнопку Menu Button → Web App</li>
+            <li>Иметь корректный URL Web App (GitHub Pages)</li>
+            <li>Иметь включенный Inline Mode</li>
+            <li>Открывать WebApp при нажатии кнопки меню</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>📞 Поддержка</h2>
+        <p>Если после проверки всех настроек проблема сохраняется:</p>
+        <ul>
+            <li>Проверьте логи консоли в WebApp</li>
+            <li>Убедитесь, что GitHub Pages обновлены</li>
+            <li>Попробуйте другой браузер или устройство</li>
+            <li>Свяжитесь с поддержкой Telegram или GitHub</li>
+        </ul>
+    </div>
+</body>
+</html>
