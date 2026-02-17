@@ -8,7 +8,16 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
   };
 
   try {
-    const response = await fetch('https://web-production-8d8bb.up.railway.app', {
+    console.log('Sending signal to admin:', payload);
+
+    // Use proxy in development, direct URL in production
+    const apiUrl = import.meta.env.DEV
+      ? '/api'
+      : 'https://web-production-8d8bb.up.railway.app';
+
+    console.log('Using API URL:', apiUrl);
+
+    const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -16,18 +25,34 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
       body: JSON.stringify(payload)
     });
 
+    console.log('Response status:', response.status);
+
     if (response.ok) {
       console.log('Signal sent successfully');
-      if ((window as any).Telegram?.WebApp) {
-        (window as any).Telegram.WebApp.close();
-      }
     } else {
       console.error('Failed to send signal:', response.status);
       alert("Не удалось отправить сигнал");
     }
+
+    // Always try to close the app after sending the signal
+    if ((window as any).Telegram?.WebApp) {
+      console.log('Closing Telegram WebApp');
+      setTimeout(() => {
+        (window as any).Telegram.WebApp.close();
+      }, 100); // Small delay to ensure data is processed
+    } else {
+      console.warn('Telegram WebApp not available, showing success message');
+      alert("Данные отправлены! Приложение можно закрыть.");
+    }
   } catch (error) {
     console.error('Error sending signal:', error);
     alert("Ошибка при отправке сигнала");
+
+    // Try to close anyway in case of error
+    if ((window as any).Telegram?.WebApp) {
+      console.log('Closing Telegram WebApp after error');
+      (window as any).Telegram.WebApp.close();
+    }
   }
 };
 

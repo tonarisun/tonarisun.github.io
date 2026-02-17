@@ -120,16 +120,22 @@ const App: React.FC = () => {
       const result = botResults[quizResult];
       
       const handleOrder = async () => {
-        await sendSignalToAdmin({
-          service_type: "bot_development_order",
-          action: "order_bot_development",
-          quiz_result: {
-            bot_type: result.type,
-            title: result.title,
-            description: result.description
-          },
-          result_text: `Результат опроса: ${result.title} - ${result.description}`
-        });
+        console.log('Starting order process for:', result.title);
+        try {
+          await sendSignalToAdmin({
+            service_type: "bot_development_order",
+            action: "order_bot_development",
+            quiz_result: {
+              bot_type: result.type,
+              title: result.title,
+              description: result.description
+            },
+            result_text: `Результат опроса: ${result.title} - ${result.description}`
+          });
+          console.log('Order process completed');
+        } catch (error) {
+          console.error('Error in handleOrder:', error);
+        }
       };
 
       return (

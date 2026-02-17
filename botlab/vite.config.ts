@@ -9,6 +9,14 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        proxy: {
+          '/api': {
+            target: 'https://web-production-8d8bb.up.railway.app',
+            changeOrigin: true,
+            rewrite: (path) => path.replace(/^\/api/, ''),
+            secure: true,
+          }
+        }
       },
       plugins: [react()],
       define: {
