@@ -8,7 +8,9 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
   try {
     const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
     const payload = {
-      user_name: user ? user.first_name : "Anonymous",
+      username: user ? user.username : "no username",
+      first_name: user ? user.first_name : "no name",
+      user_id: user ? user.id : "no id",
       ...data
     };
 
@@ -30,7 +32,6 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        "Authorization": `tma ${initData}`
       },
       body: JSON.stringify(payload)
     });
