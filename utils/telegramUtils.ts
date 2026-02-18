@@ -18,7 +18,7 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
 
     // Simple environment detection
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const apiUrl = isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app';
+    const apiUrl = isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app/api/signal';
 
     console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
     console.log('🔗 API URL:', apiUrl);
