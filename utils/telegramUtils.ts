@@ -1,41 +1,30 @@
 // Telegram WebApp utilities
-export const sendSignalToAdmin = async (data: any): Promise<void> => {
-  const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
 
-  const payload = {
-    user_name: user ? user.first_name : "Anonymous",
-    ...data
-  };
+export const sendSignalToAdmin = async (data: any): Promise<void> => {
+  console.log('🚀 sendSignalToAdmin called with data:', data);
+  console.log('🔍 Current location:', window.location.href);
+  console.log('📱 Telegram WebApp object:', (window as any).Telegram?.WebApp);
 
   try {
-    console.log('🚀 sendSignalToAdmin called');
+    const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
+    const payload = {
+      user_name: user ? user.first_name : "Anonymous",
+      ...data
+    };
+
     console.log('📱 Telegram WebApp available:', !!(window as any).Telegram?.WebApp);
     console.log('👤 User data:', user);
     console.log('📦 Payload to send:', payload);
 
-    // Determine environment more reliably
-    const isDevelopment = window.location.hostname === 'localhost' ||
-                         window.location.hostname === '127.0.0.1' ||
-                         import.meta.env?.DEV === true;
-
-    const apiUrl = isDevelopment
-      ? '/api'
-      : 'https://web-production-8d8bb.up.railway.app';
+    // Simple environment detection
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const apiUrl = isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app';
 
     console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
     console.log('🔗 API URL:', apiUrl);
 
-    // Test server availability first (skip in development proxy)
-    if (!isDevelopment) {
-      try {
-        console.log('🔍 Checking server availability...');
-        const testResponse = await fetch(apiUrl, { method: 'HEAD' });
-        console.log(`📡 Server check: ${testResponse.status}`);
-      } catch (testError) {
-        console.warn('⚠️ Server availability check failed:', testError.message);
-      }
-    }
-
+    // Simple fetch request
+    console.log('📡 Making request to:', apiUrl);
     const response = await fetch(apiUrl, {
       method: 'POST',
       headers: {
@@ -43,6 +32,8 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
       },
       body: JSON.stringify(payload)
     });
+
+    console.log('📡 Response status:', response.status);
 
     console.log(`📡 Response received: ${response.status} ${response.statusText}`);
 
