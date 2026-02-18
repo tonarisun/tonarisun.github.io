@@ -19,6 +19,7 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
     // Simple environment detection
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     const apiUrl = isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app/api/signal';
+    const initData = (window as any).Telegram?.WebApp?.initData;
 
     console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
     console.log('🔗 API URL:', apiUrl);
@@ -29,6 +30,7 @@ export const sendSignalToAdmin = async (data: any): Promise<void> => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        "Authorization": `tma ${initData}`
       },
       body: JSON.stringify(payload)
     });
