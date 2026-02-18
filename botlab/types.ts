@@ -27,3 +27,20 @@ export interface BotResult {
   icon: ReactNode;
   colorClass: string;
 }
+
+export interface QuizAnswers {
+  [BotType.LINEAR]: number;
+  [BotType.AI_ASSISTANT]: number;
+  [BotType.INTEGRATOR]: number;
+}
+
+export interface QuizSelectedAnswers {
+  [questionId: number]: string; // questionId -> selected option label
+}
+
+export interface QuizResult {
+  botType: BotType;
+  answers: QuizAnswers;
+  questions: QuizQuestion[];
+  selectedAnswers: QuizSelectedAnswers;
+}

@@ -80,6 +80,86 @@
       background: var(--btn-hover);
       color: var(--btn-hover-text);
     }
+
+    .logger {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      border-top: 2px solid var(--btn-border);
+      max-height: 60vh;
+      overflow-y: auto;
+      display: none;
+      z-index: 1000;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      padding: 10px;
+    }
+
+    .logger.show {
+      display: block;
+    }
+
+    .logger-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--btn-border);
+    }
+
+    .logger-title {
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .logger-close {
+      background: none;
+      border: 1px solid var(--btn-border);
+      color: var(--text);
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+      font-size: 12px;
+    }
+
+    .logger-close:hover {
+      background: var(--btn-hover);
+      color: var(--btn-hover-text);
+    }
+
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-radius: 3px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .log-entry.log {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text);
+    }
+
+    .log-entry.error {
+      background: rgba(220, 38, 38, 0.1);
+      color: #ef4444;
+      border-left: 3px solid #ef4444;
+    }
+
+    .log-entry.warn {
+      background: rgba(245, 158, 11, 0.1);
+      color: #f59e0b;
+      border-left: 3px solid #f59e0b;
+    }
+
+    .log-entry.info {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      border-left: 3px solid #3b82f6;
+    }
   </style>
 </head>
 <body>
@@ -90,8 +170,18 @@
       <button id="go-to-quiz" type="button">КВИЗ</button>
       <button id="go-to-botlab" type="button">БОТЛАБ</button>
       <button id="go-to-lead-for-quiz" type="button">Лид за квиз</button>
+      <button id="toggle-logger" type="button">ОТОБРАЖАТЬ ЛОГИ</button>
     </div>
   </main>
+
+  <div id="logger" class="logger">
+    <div class="logger-header">
+      <span class="logger-title">КОНСОЛЬ ЛОГОВ</span>
+      <button id="close-logger" class="logger-close">ЗАКРЫТЬ</button>
+    </div>
+    <div id="log-entries"></div>
+  </div>
+
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const appButton = document.getElementById("go-to-app");
@@ -122,6 +212,92 @@
           window.location.href = "./lead-for-quiz/dist/index.html";
         });
       }
+
+      // Логгер функциональность
+      const toggleLoggerButton = document.getElementById("toggle-logger");
+      const closeLoggerButton = document.getElementById("close-logger");
+      const logger = document.getElementById("logger");
+      const logEntries = document.getElementById("log-entries");
+
+      let originalConsole = {
+        log: console.log,
+        error: console.error,
+        warn: console.warn,
+        info: console.info
+      };
+
+      function formatTimestamp() {
+        const now = new Date();
+        return now.toLocaleTimeString('ru-RU', {
+          hour12: false,
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          fractionalSecondDigits: 3
+        });
+      }
+
+      function addLogEntry(type, ...args) {
+        const timestamp = formatTimestamp();
+        const message = args.map(arg =>
+          typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+        ).join(' ');
+
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `[${timestamp}] ${message}`;
+
+        logEntries.appendChild(entry);
+        logEntries.scrollTop = logEntries.scrollHeight;
+
+        // Ограничиваем количество записей в логе (последние 100)
+        while (logEntries.children.length > 100) {
+          logEntries.removeChild(logEntries.firstChild);
+        }
+      }
+
+      // Перехватываем console методы
+      console.log = (...args) => {
+        originalConsole.log(...args);
+        addLogEntry('log', ...args);
+      };
+
+      console.error = (...args) => {
+        originalConsole.error(...args);
+        addLogEntry('error', ...args);
+      };
+
+      console.warn = (...args) => {
+        originalConsole.warn(...args);
+        addLogEntry('warn', ...args);
+      };
+
+      console.info = (...args) => {
+        originalConsole.info(...args);
+        addLogEntry('info', ...args);
+      };
+
+      // Обработчики для кнопок логгера
+      if (toggleLoggerButton) {
+        toggleLoggerButton.addEventListener("click", function () {
+          logger.classList.toggle("show");
+          if (logger.classList.contains("show")) {
+            toggleLoggerButton.textContent = "СКРЫТЬ ЛОГИ";
+          } else {
+            toggleLoggerButton.textContent = "ОТОБРАЖАТЬ ЛОГИ";
+          }
+        });
+      }
+
+      if (closeLoggerButton) {
+        closeLoggerButton.addEventListener("click", function () {
+          logger.classList.remove("show");
+          toggleLoggerButton.textContent = "ОТОБРАЖАТЬ ЛОГИ";
+        });
+      }
+
+      // Добавляем начальную запись в лог
+      addLogEntry('info', 'Логгер инициализирован');
     });
   </script>
 </body>

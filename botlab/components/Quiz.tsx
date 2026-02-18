@@ -12,10 +12,10 @@ import {
   CheckCircle2,
   Cpu
 } from 'lucide-react';
-import { BotType, QuizQuestion, BotResult } from '../types';
+import { BotType, QuizQuestion, BotResult, QuizResult, QuizAnswers, QuizSelectedAnswers } from '../types';
 
 interface QuizProps {
-  onComplete: (result: BotType) => void;
+  onComplete: (result: QuizResult) => void;
 }
 
 const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
@@ -25,6 +25,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     [BotType.AI_ASSISTANT]: 0,
     [BotType.INTEGRATOR]: 0
   });
+  const [selectedAnswers, setSelectedAnswers] = useState<QuizSelectedAnswers>({});
 
   const questions: QuizQuestion[] = [
     {
@@ -95,7 +96,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     }
   ];
 
-  const handleSelect = (points: Partial<Record<BotType, number>>) => {
+  const handleSelect = (points: Partial<Record<BotType, number>>, selectedLabel: string) => {
     const newAnswers = { ...answers };
     Object.keys(points).forEach((key) => {
       const type = key as BotType;
@@ -103,11 +104,22 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     });
     setAnswers(newAnswers);
 
+    // Сохраняем выбранный ответ
+    const newSelectedAnswers = { ...selectedAnswers };
+    newSelectedAnswers[questions[step].id] = selectedLabel;
+    setSelectedAnswers(newSelectedAnswers);
+
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
       const winner = Object.entries(newAnswers).reduce((a, b) => (a[1] > b[1] ? a : b))[0] as BotType;
-      onComplete(winner);
+      const result: QuizResult = {
+        botType: winner,
+        answers: newAnswers as QuizAnswers,
+        questions: questions,
+        selectedAnswers: newSelectedAnswers
+      };
+      onComplete(result);
     }
   };
 
@@ -137,7 +149,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
           {questions[step].options.map((option, idx) => (
             <button
               key={idx}
-              onClick={() => handleSelect(option.points)}
+              onClick={() => handleSelect(option.points, option.label)}
               className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-pink-500/10 hover:border-pink-500/50 transition-all text-left relative overflow-hidden"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/5 flex items-center justify-center text-pink-400 group-hover:scale-110 group-hover:bg-pink-500 group-hover:text-white transition-all shrink-0">

@@ -18,14 +18,14 @@ import {
   Sparkles
 } from 'lucide-react';
 import Quiz from './components/Quiz';
-import { BotType, BotResult } from './types';
+import { BotType, BotResult, QuizResult, QuizSelectedAnswers } from './types';
 import { initTelegramUtils, sendSignalToAdmin } from '../utils/telegramUtils';
 
 
 const App: React.FC = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [isLoaded, setIsLoaded] = useState(false);
-  const [quizResult, setQuizResult] = useState<BotType | null>(null);
+  const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -127,7 +127,7 @@ const App: React.FC = () => {
 
   const renderQuiz = () => {
     if (quizResult) {
-      const result = botResults[quizResult];
+      const result = botResults[quizResult.botType];
       
       const handleOrder = async () => {
         console.log('🎯 Starting order process for:', result.title);
@@ -147,6 +147,10 @@ const App: React.FC = () => {
               title: result.title,
               description: result.description
             },
+            quiz_data: quizResult.questions.map(question => ({
+              question: question.question,
+              answer: quizResult.selectedAnswers[question.id] || 'Не выбран'
+            })),
             result_text: `Результат опроса: ${result.title} - ${result.description}`
           });
           console.log('✅ Order process completed successfully');
