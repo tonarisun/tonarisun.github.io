@@ -26,6 +26,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
     [BotType.INTEGRATOR]: 0
   });
   const [selectedAnswers, setSelectedAnswers] = useState<QuizSelectedAnswers>({});
+  const [isSelecting, setIsSelecting] = useState(false);
 
   const questions: QuizQuestion[] = [
     {
@@ -97,6 +98,12 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
   ];
 
   const handleSelect = (points: Partial<Record<BotType, number>>, selectedLabel: string) => {
+    if (isSelecting) {
+      return;
+    }
+
+    setIsSelecting(true);
+
     const newAnswers = { ...answers };
     Object.keys(points).forEach((key) => {
       const type = key as BotType;
@@ -111,6 +118,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
 
     if (step < questions.length - 1) {
       setStep(step + 1);
+      setTimeout(() => setIsSelecting(false), 250);
     } else {
       const winner = Object.entries(newAnswers).reduce((a, b) => (a[1] > b[1] ? a : b))[0] as BotType;
       const result: QuizResult = {
@@ -120,6 +128,7 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
         selectedAnswers: newSelectedAnswers
       };
       onComplete(result);
+      setIsSelecting(false);
     }
   };
 
@@ -145,12 +154,13 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
           {questions[step].question}
         </h3>
 
-        <div className="grid gap-3 md:gap-4">
+        <div key={questions[step].id} className="grid gap-3 md:gap-4">
           {questions[step].options.map((option, idx) => (
             <button
               key={idx}
               onClick={() => handleSelect(option.points, option.label)}
-              className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-pink-500/10 hover:border-pink-500/50 transition-all text-left relative overflow-hidden"
+              disabled={isSelecting}
+              className="group flex items-center gap-4 md:gap-6 p-4 md:p-6 bg-white/[0.03] border border-white/10 rounded-2xl hover:bg-pink-500/10 hover:border-pink-500/50 transition-all text-left relative overflow-hidden disabled:opacity-80 disabled:pointer-events-none"
             >
               <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-white/5 flex items-center justify-center text-pink-400 group-hover:scale-110 group-hover:bg-pink-500 group-hover:text-white transition-all shrink-0">
                 <div className="scale-75 md:scale-100 flex items-center justify-center">
