@@ -1,34 +1,33 @@
 // Telegram WebApp utilities
 
-export const sendSignalToAdmin = async (data: any): Promise<void> => {
+export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<void> => {
   console.log('🚀 sendSignalToAdmin called with data:', data);
   console.log('🔍 Current location:', window.location.href);
   console.log('📱 Telegram WebApp object:', (window as any).Telegram?.WebApp);
 
-  try {
-    const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
-    const payload = {
-      username: user ? user.username : "no username",
-      first_name: user ? user.first_name : "no name",
-      user_id: user ? user.id : "no id",
-      ...data
-    };
+  const user = (window as any).Telegram?.WebApp?.initDataUnsafe?.user;
+  const payload = {
+    username: user ? user.username : "no username",
+    first_name: user ? user.first_name : "no name",
+    user_id: user ? user.id : "no id",
+    ...data
+  };
 
+  try {
     console.log('📱 Telegram WebApp available:', !!(window as any).Telegram?.WebApp);
     console.log('👤 User data:', user);
     console.log('📦 Payload to send:', payload);
 
     // Simple environment detection
     const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const apiUrl = isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app/api/signal';
-    const initData = (window as any).Telegram?.WebApp?.initData;
+    const targetApiUrl = apiUrl || (isDevelopment ? '/api/webhook' : 'https://web-production-8d8bb.up.railway.app/api/signal');
 
     console.log('🌍 Environment:', isDevelopment ? 'development' : 'production');
-    console.log('🔗 API URL:', apiUrl);
+    console.log('🔗 API URL:', targetApiUrl);
 
     // Simple fetch request
-    console.log('📡 Making request to:', apiUrl);
-    const response = await fetch(apiUrl, {
+    console.log('📡 Making request to:', targetApiUrl);
+    const response = await fetch(targetApiUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -134,6 +133,6 @@ declare global {
         close: () => void;
       };
     };
-    sendSignalToAdmin: (data: any) => Promise<void>;
+    sendSignalToAdmin: (data: any, apiUrl?: string) => Promise<void>;
   }
 }

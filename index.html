@@ -170,6 +170,7 @@
       <button id="go-to-quiz" type="button">КВИЗ</button>
       <button id="go-to-botlab" type="button">БОТЛАБ</button>
       <button id="go-to-lead-for-quiz" type="button">Лид за квиз</button>
+      <button id="go-to-training-quiz" type="button">Квиз по тренировкам</button>
     </div>
   </main>
 
@@ -187,6 +188,7 @@
       const quizButton = document.getElementById("go-to-quiz");
       const botlabButton = document.getElementById("go-to-botlab");
       const leadForQuizButton = document.getElementById("go-to-lead-for-quiz");
+      const trainingQuizButton = document.getElementById("go-to-training-quiz");
 
       if (appButton) {
         appButton.addEventListener("click", function () {
@@ -209,6 +211,12 @@
       if (leadForQuizButton) {
         leadForQuizButton.addEventListener("click", function () {
           window.location.href = "./lead-for-quiz/dist/index.html";
+        });
+      }
+
+      if (trainingQuizButton) {
+        trainingQuizButton.addEventListener("click", function () {
+          window.location.href = "./training-quiz/dist/index.html";
         });
       }
 
