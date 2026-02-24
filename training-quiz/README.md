@@ -10,7 +10,7 @@
 
 ```bash
 cd training-quiz
-npm run start
+npm run start:local
 ```
 
 Открой:
@@ -39,3 +39,12 @@ ipconfig getifaddr en0
 ```bash
 ipconfig getifaddr en1
 ```
+
+## Деплой на Railway
+
+- Укажи `Root Directory`: `training-quiz` (если деплоишь из этого монорепозитория)
+- `Build Command`: оставить пустым
+- `Start Command`: `npm start`
+- `PORT` в Railway добавлять не нужно: платформа передаст его автоматически
+
+После деплоя открой публичный URL сервиса и пройди квиз до кнопки `УЗНАТЬ РЕЗУЛЬТАТ`, чтобы проверить отправку `fetch` в `SIGNAL_API_URL`.

@@ -13,8 +13,8 @@ function getArgValue(flag, fallback) {
   return args[index + 1];
 }
 
-const host = getArgValue("--host", "127.0.0.1");
-const port = Number(getArgValue("--port", "8080"));
+const host = getArgValue("--host", process.env.HOST || "0.0.0.0");
+const port = Number(getArgValue("--port", process.env.PORT || "8080"));
 
 const DIST_DIR = path.join(__dirname, "dist");
 const INDEX_FILE = path.join(DIST_DIR, "index.html");

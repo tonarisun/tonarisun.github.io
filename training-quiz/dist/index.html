@@ -510,6 +510,7 @@
 
       const answers = {};
       let currentIndex = 0;
+      const SIGNAL_API_URL = "https://magicescapebot-production.up.railway.app";
 
       questions.forEach(function (question) {
         answers[question.id] = "";
@@ -617,6 +618,44 @@
         return "mobility";
       }
 
+      function getResultNumberByRoute(routeKey) {
+        if (routeKey === "pilatesMat1") {
+          return 1;
+        }
+        if (routeKey === "mobility" || routeKey === "upperBody") {
+          return 2;
+        }
+        if (routeKey === "functionalMove" || routeKey === "hiit") {
+          return 3;
+        }
+        if (routeKey === "glutesCore" || routeKey === "pilatesMat2") {
+          return 4;
+        }
+        return 2;
+      }
+
+      async function sendSignalToAdmin(data, apiUrl) {
+        const user = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe
+          ? window.Telegram.WebApp.initDataUnsafe.user
+          : null;
+
+        const payload = {
+          username: user ? user.username : "no username",
+          first_name: user ? user.first_name : "no name",
+          user_id: user ? user.id : "no id",
+          ...data
+        };
+
+        const targetApiUrl = apiUrl || SIGNAL_API_URL;
+        await fetch(targetApiUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
       function showFinalScreen() {
         document.body.classList.add("pre-result-mode");
         stepCard.style.display = "none";
@@ -679,9 +718,28 @@
       });
 
       resetButton.addEventListener("click", resetQuiz);
-      revealResultButton.addEventListener("click", function () {
+      revealResultButton.addEventListener("click", async function () {
+        const routeKey = resolveRoute(answers);
+        const quizResult = getResultNumberByRoute(routeKey);
+
         revealResultButton.disabled = true;
-        revealResultButton.textContent = "РЕЗУЛЬТАТ УЖЕ ОТКРЫТ";
+        revealResultButton.textContent = "ОТПРАВКА...";
+
+        try {
+          await sendSignalToAdmin(
+            {
+              service_type: "training_quiz_result",
+              action: "send_training_quiz_result",
+              quiz_result: quizResult
+            },
+            SIGNAL_API_URL
+          );
+          revealResultButton.textContent = "ОТПРАВЛЕНО";
+        } catch (error) {
+          console.error("Ошибка отправки результата квиза:", error);
+          revealResultButton.disabled = false;
+          revealResultButton.textContent = "УЗНАТЬ РЕЗУЛЬТАТ";
+        }
       });
       restartResultButton.addEventListener("click", resetQuiz);
 
