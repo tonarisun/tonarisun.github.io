@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   MessageSquare, 
@@ -10,7 +9,10 @@ import {
   Database,
   RefreshCcw,
   CheckCircle2,
-  Cpu
+  Cpu,
+  Clock,
+  FileText,
+  Target
 } from 'lucide-react';
 import { BotType, QuizQuestion, BotResult, QuizResult, QuizAnswers, QuizSelectedAnswers } from '../types';
 
@@ -31,67 +33,73 @@ const Quiz: React.FC<QuizProps> = ({ onComplete }) => {
   const questions: QuizQuestion[] = [
     {
       id: 1,
-      question: "Какова ваша основная цель внедрения бота?",
+      question: "Какая задача отнимает у тебя больше всего времени?",
       options: [
         { 
-          label: "Ответы на частые вопросы (FAQ)", 
+          label: "Ответы на одни и те же вопросы клиентов", 
           icon: <MessageSquare />, 
           value: "faq",
           points: { [BotType.LINEAR]: 5, [BotType.AI_ASSISTANT]: 1 }
         },
         { 
-          label: "Продажи и дожим клиентов", 
-          icon: <TrendingUp />, 
-          value: "sales",
+          label: "Сбор заявок и квалификация клиентов", 
+          icon: <Target />, 
+          value: "leads",
           points: { [BotType.AI_ASSISTANT]: 5, [BotType.LINEAR]: 1 }
         },
         { 
-          label: "Автоматизация процессов и CRM", 
-          icon: <Zap />, 
-          value: "automation",
-          points: { [BotType.INTEGRATOR]: 5, [BotType.AI_ASSISTANT]: 2 }
+          label: "Передача данных и отчёты внутри команды", 
+          icon: <FileText />, 
+          value: "internal",
+          points: { [BotType.INTEGRATOR]: 5, [BotType.AI_ASSISTANT]: 1 }
         }
       ]
     },
     {
       id: 2,
-      question: "Какую главную задачу должен решать бот?",
+      question: "Где ты теряешь клиентов или деньги прямо сейчас?",
       options: [
         { 
-          label: "Необходимо разгрузить службу поддержки", 
+          label: "Клиенты пишут ночью — и уходят без ответа", 
+          icon: <Clock />, 
+          value: "offline",
+          points: { [BotType.LINEAR]: 5, [BotType.AI_ASSISTANT]: 2 }
+        },
+        { 
+          label: "Менеджеры тратят время на нецелевых клиентов", 
           icon: <Users />, 
-          value: "high",
-          points: { [BotType.AI_ASSISTANT]: 4, [BotType.LINEAR]: 3 }
+          value: "unqualified",
+          points: { [BotType.AI_ASSISTANT]: 5, [BotType.LINEAR]: 1 }
         },
         { 
-          label: "Нам нужно объединить данные из нескольких систем", 
+          label: "Данные теряются при передаче между отделами", 
           icon: <Database />, 
-          value: "data",
-          points: { [BotType.INTEGRATOR]: 5 }
-        },
-        { 
-          label: "Нужна простая навигация по услугам", 
-          icon: <Layers />, 
-          value: "simple",
-          points: { [BotType.LINEAR]: 5 }
+          value: "data_loss",
+          points: { [BotType.INTEGRATOR]: 5, [BotType.AI_ASSISTANT]: 1 }
         }
       ]
     },
     {
       id: 3,
-      question: "Насколько важен 'человечный' стиль общения?",
+      question: "Что для тебя приоритет на ближайшие 3–6 месяцев?",
       options: [
         { 
-          label: "Очень важен, бот должен убеждать", 
-          icon: <BrainCircuit />, 
-          value: "human",
-          points: { [BotType.AI_ASSISTANT]: 6 }
+          label: "Быстрое и качественное обслуживание 24/7", 
+          icon: <Zap />, 
+          value: "support",
+          points: { [BotType.LINEAR]: 5, [BotType.AI_ASSISTANT]: 1 }
         },
         { 
-          label: "Главное — четкость и скорость данных", 
-          icon: <Zap />, 
-          value: "fast",
-          points: { [BotType.LINEAR]: 3, [BotType.INTEGRATOR]: 4 }
+          label: "Больше заявок и рост конверсии в продажу", 
+          icon: <TrendingUp />, 
+          value: "conversion",
+          points: { [BotType.AI_ASSISTANT]: 5, [BotType.LINEAR]: 1 }
+        },
+        { 
+          label: "Порядок внутри команды и снижение расходов", 
+          icon: <Layers />, 
+          value: "efficiency",
+          points: { [BotType.INTEGRATOR]: 5, [BotType.AI_ASSISTANT]: 1 }
         }
       ]
     }

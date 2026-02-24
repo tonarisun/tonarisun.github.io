@@ -1,4 +1,4 @@
-const CACHE_NAME = 'botlab-cache-v1';
+const CACHE_NAME = 'botlab-cache-v2';
 const APP_SHELL = ['./', './index.html', './manifest.webmanifest', './app-icon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -23,6 +23,22 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Always revalidate HTML to avoid serving stale app shell.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put('./index.html', responseClone);
+          });
+          return networkResponse;
+        })
+        .catch(() => caches.match('./index.html'))
+    );
     return;
   }
 

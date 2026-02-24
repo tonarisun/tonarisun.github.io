@@ -47,21 +47,21 @@ const App: React.FC = () => {
     [BotType.LINEAR]: {
       type: BotType.LINEAR,
       title: "Кнопочный Бот-Администратор",
-      description: "Ваш идеальный выбор — структурированный бот с четким меню. Он отлично справится с записью клиентов, ответами на FAQ и первичной квалификацией лидов.",
+      description: "Твой идеальный выбор — структурированный бот с четким меню. Он отлично справится с записью клиентов, ответами на FAQ и первичной квалификацией лидов.",
       icon: <Layers size={48} />,
       colorClass: "from-pink-500 to-rose-600"
     },
     [BotType.AI_ASSISTANT]: {
       type: BotType.AI_ASSISTANT,
       title: "ИИ-Ассистент (Нейро-сотрудник)",
-      description: "Вам нужен интеллектуальный помощник на базе LLM. Он понимает живую речь, умеет работать с возражениями и продавать ваш продукт так же круто, как топовый менеджер.",
+      description: "Тебе нужен интеллектуальный помощник на базе LLM. Он понимает живую речь, умеет работать с возражениями и продавать твой продукт так же круто, как топовый менеджер.",
       icon: <BrainCircuit size={48} />,
       colorClass: "from-purple-500 to-indigo-600"
     },
     [BotType.INTEGRATOR]: {
       type: BotType.INTEGRATOR,
       title: "Бот-Интегратор (Системный мозг)",
-      description: "Ваша задача — автоматизация. Этот бот свяжет Telegram с вашей CRM, 1С, Google Таблицами и платежными шлюзами, исключив ошибки человеческого фактора.",
+      description: "Твоя задача — автоматизация. Этот бот свяжет чат с твоей CRM, 1С, Google Таблицами и платежными шлюзами, исключив ошибки человеческого фактора.",
       icon: <Zap size={48} />,
       colorClass: "from-cyan-500 to-blue-600"
     }
@@ -157,7 +157,7 @@ const App: React.FC = () => {
         } catch (error) {
           console.error('❌ Error in handleOrder:', error);
           // Show user-friendly error message
-          alert('Произошла ошибка при отправке заказа. Попробуйте еще раз.');
+          alert('Произошла ошибка при отправке заказа. Попробуй еще раз.');
         }
       };
 
@@ -165,7 +165,7 @@ const App: React.FC = () => {
         <div className="animate-fadeIn space-y-8 max-w-3xl mx-auto">
           <div className="text-center space-y-4">
             <h2 className="text-2xl md:text-4xl font-bold italic uppercase tracking-tighter">Ваш результат готов!</h2>
-            <p className="text-gray-400 text-sm md:text-base">На основе ваших ответов, мы подобрали идеальное решение:</p>
+            <p className="text-gray-400 text-sm md:text-base">На основе твоих ответов, мы подобрали идеальное решение:</p>
           </div>
           
           <GlassCard className="relative p-6 md:p-12 border-pink-500/50 overflow-hidden">
