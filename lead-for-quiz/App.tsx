@@ -149,7 +149,7 @@ const App: React.FC = () => {
           <div className={`${isMobile ? 'space-y-14' : 'space-y-24'} animate-in fade-in slide-in-from-bottom-12 duration-1000`}>
             <header className="text-center relative">
               <div className={`inline-block rounded-full border border-pink-500/30 bg-pink-500/10 text-pink-400 font-black uppercase animate-bounce ${isMobile ? 'px-4 py-1.5 text-[9px] tracking-[0.22em] mb-6' : 'px-6 py-2 text-[10px] tracking-[0.4em] mb-8'}`}>
-                GirlsUnderCode • Cyber Academy
+              OS AI Lab • Cyber Academy
               </div>
               <h1 className={`${isMobile ? 'text-3xl mb-6' : 'text-4xl sm:text-5xl md:text-8xl mb-8'} font-black tracking-tighter leading-none italic uppercase`}>
                 ЛИД ЗА <span className={`${neonText} pr-4`}>КВИЗ</span>
@@ -327,7 +327,7 @@ const App: React.FC = () => {
 
       <footer className={`relative mt-auto border-t border-white/5 text-center text-slate-600 bg-black/20 ${isMobile ? 'py-10' : 'py-16'}`}>
         <div className={`max-w-6xl mx-auto flex flex-col md:flex-row justify-center items-center gap-8 ${isMobile ? 'px-4' : 'px-6'}`}>
-          <p className={`text-[10px] font-mono uppercase opacity-50 ${isMobile ? 'tracking-[0.2em]' : 'tracking-[0.5em]'}`}>© 2026 GirlsUnderCode. Built with AI & Passion.</p>
+          <p className={`text-[10px] font-mono uppercase opacity-50 ${isMobile ? 'tracking-[0.2em]' : 'tracking-[0.5em]'}`}>© 2026 OS AI Lab. Built with AI & Passion.</p>
         </div>
       </footer>
 

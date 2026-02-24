@@ -1,7 +1,7 @@
 {
   "name": "БОТЛАБ",
   "short_name": "БОТЛАБ",
-  "description": "Лаборатория цифровых сотрудников GirlsUnderCode.",
+  "description": "Лаборатория цифровых сотрудников OS AI Lab.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

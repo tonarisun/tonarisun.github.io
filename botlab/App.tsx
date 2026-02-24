@@ -109,7 +109,7 @@ const App: React.FC = () => {
          </div>
 
          <p className="text-gray-300 text-lg md:text-2xl leading-relaxed font-light max-w-3xl mx-auto">
-           Добро пожаловать в будущее автоматизации. Мы создаем 'мозг' вашего бизнеса в цифровой среде под брендом GirlsUnderCode. Мы не просто пишем код — мы проектируем интеллектуальные системы, которые разгружают ваш бизнес.
+           Добро пожаловать в будущее автоматизации. Мы создаем 'мозг' вашего бизнеса в цифровой среде под брендом OS AI LAB. Мы не просто пишем код — мы проектируем интеллектуальные системы, которые разгружают ваш бизнес.
          </p>
 
          <div className="pt-8">
@@ -412,7 +412,7 @@ const App: React.FC = () => {
             <span className="text-lg font-bold uppercase italic tracking-tighter">БОТЛАБ</span>
           </div>
           <div className="text-gray-500 text-xs md:text-sm font-mono uppercase tracking-widest text-center md:text-right">
-            © 2026 GirlsUnderCode. Built with AI & Passion.
+            © 2026 OS AI Lab. Built with AI & Passion.
           </div>
         </div>
       </footer>

@@ -45,7 +45,7 @@ const App: React.FC = () => {
           <div className="flex items-center gap-2 group cursor-pointer">
             <div className="w-2.5 h-2.5 bg-pink-500 rotate-45 animate-pulse shadow-[0_0_10px_#d946ef]"></div>
             <span className="font-orbitron text-lg font-black tracking-[0.15em] text-white">
-              GIRLS<span className="text-pink-500 drop-shadow-[0_0_8px_#d946ef]">UNDERCODE</span>
+              OS AI<span className="text-pink-500 drop-shadow-[0_0_8px_#d946ef]">LAB</span>
             </span>
           </div>
           <div className="text-[9px] font-orbitron text-gray-500 tracking-[0.3em] hidden sm:block uppercase">

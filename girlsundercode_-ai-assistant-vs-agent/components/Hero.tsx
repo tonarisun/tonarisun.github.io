@@ -51,7 +51,7 @@ const Hero: React.FC = () => {
                     </blockquote>
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-[1px] bg-cyan-400"></div>
-                        <span className="font-orbitron text-[10px] text-cyan-400 uppercase tracking-[0.4em] font-bold">GIRLSUNDERCODE PHILOSOPHY</span>
+                        <span className="font-orbitron text-[10px] text-cyan-400 uppercase tracking-[0.4em] font-bold">OS AI PHILOSOPHY</span>
                     </div>
                 </div>
             </div>
