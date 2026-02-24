@@ -1,0 +1,10 @@
+{
+  "name": "training-quiz",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Static yoga-style training quiz launcher",
+  "scripts": {
+    "start": "node server.js --host 127.0.0.1 --port 8080",
+    "start:network": "node server.js --host 0.0.0.0 --port 8080"
+  }
+}

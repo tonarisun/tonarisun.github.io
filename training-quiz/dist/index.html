@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>training-quiz</title>
+  <style>
+    :root {
+      --bg-start: #eef8f2;
+      --bg-end: #f7f3ea;
+      --text: #233126;
+      --muted: #5e7062;
+      --card: rgba(255, 255, 255, 0.82);
+      --card-border: rgba(95, 127, 107, 0.22);
+      --accent: #5f7f6b;
+      --accent-strong: #456152;
+      --accent-soft: #d6e8da;
+      --radius-xl: 24px;
+      --radius-lg: 16px;
+      --shadow: 0 12px 40px rgba(59, 85, 70, 0.14);
+      --space-1: 8px;
+      --space-2: 12px;
+      --space-3: 16px;
+      --space-4: 24px;
+      --space-5: 32px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(150deg, var(--bg-start), var(--bg-end));
+      padding: var(--space-4);
+    }
+
+    .page {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    .quiz-card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(4px);
+    }
+
+    .quiz-header {
+      padding: var(--space-5) var(--space-4) var(--space-4);
+      border-bottom: 1px solid var(--card-border);
+      background: linear-gradient(180deg, rgba(214, 232, 218, 0.5), rgba(255, 255, 255, 0));
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent-strong);
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      margin-bottom: var(--space-3);
+    }
+
+    h1 {
+      font-size: clamp(1.6rem, 3.6vw, 2.2rem);
+      line-height: 1.2;
+      margin-bottom: var(--space-2);
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.5;
+      max-width: 66ch;
+    }
+
+    .quiz-content {
+      padding: var(--space-4);
+      display: grid;
+      gap: var(--space-4);
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .progress-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: var(--space-2);
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(95, 127, 107, 0.16);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #9ec7a8, #5f7f6b);
+      transition: width 0.25s ease;
+    }
+
+    .step-card {
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .step-title {
+      font-size: 1.02rem;
+      margin-bottom: var(--space-2);
+      line-height: 1.35;
+    }
+
+    .step-subtitle {
+      color: var(--muted);
+      margin-bottom: var(--space-3);
+      font-size: 0.92rem;
+    }
+
+    .options {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .option {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      background: #ffffff;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .option:hover {
+      border-color: rgba(69, 97, 82, 0.45);
+      background: #f9fdf9;
+    }
+
+    .option input {
+      margin-top: 3px;
+      accent-color: var(--accent);
+    }
+
+    .option-code {
+      min-width: 20px;
+      color: var(--accent-strong);
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      align-items: center;
+    }
+
+    button {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 18px;
+      font-size: 0.98rem;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-strong);
+    }
+
+    .btn-primary:disabled {
+      background: #9eb0a3;
+      cursor: not-allowed;
+    }
+
+    .btn-result-cta {
+      background: linear-gradient(135deg, #ff6a00, #ff2d55);
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      box-shadow: 0 10px 24px rgba(255, 64, 64, 0.34);
+    }
+
+    .btn-result-cta:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--card-border);
+      color: var(--text);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .final-screen {
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-4);
+      background: #ffffff;
+      display: none;
+      text-align: center;
+    }
+
+    .final-screen.show {
+      display: block;
+    }
+
+    .final-screen-text {
+      color: var(--text);
+      line-height: 1.5;
+      margin-bottom: var(--space-4);
+      font-size: 1.02rem;
+      font-weight: 600;
+    }
+
+    .final-buttons {
+      display: grid;
+      gap: var(--space-2);
+      max-width: 460px;
+      margin: 0 auto;
+    }
+
+    .btn-final-primary {
+      background: linear-gradient(135deg, #ff6a00, #ff2d55);
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      min-height: 54px;
+      box-shadow: 0 10px 24px rgba(255, 64, 64, 0.34);
+    }
+
+    .btn-final-primary:hover {
+      filter: brightness(1.06);
+      transform: translateY(-1px);
+    }
+
+    body.result-mode .quiz-header,
+    body.result-mode #prev-btn,
+    body.result-mode #next-btn,
+    body.result-mode #hint {
+      display: none !important;
+    }
+
+    body.pre-result-mode .quiz-header,
+    body.pre-result-mode #step-card,
+    body.pre-result-mode .actions {
+      display: none !important;
+    }
+
+    body.result-mode .quiz-content {
+      padding-bottom: calc(110px + env(safe-area-inset-bottom));
+    }
+
+    body.result-mode .result {
+      display: block;
+      min-height: calc(100vh - 240px);
+    }
+
+    @media (max-width: 767px) {
+      body {
+        padding: var(--space-2);
+      }
+
+      .page {
+        max-width: 100%;
+      }
+
+      .quiz-card {
+        border-radius: 18px;
+      }
+
+      .quiz-header {
+        padding: 20px var(--space-3) var(--space-3);
+      }
+
+      h1 {
+        font-size: clamp(1.35rem, 6vw, 1.75rem);
+      }
+
+      .subtitle {
+        font-size: 0.94rem;
+      }
+
+      .quiz-content {
+        padding: var(--space-3) var(--space-3) calc(120px + env(safe-area-inset-bottom));
+        gap: var(--space-3);
+      }
+
+      .progress-top {
+        font-size: 0.85rem;
+      }
+
+      .step-card {
+        padding: var(--space-3);
+      }
+
+      .step-title {
+        font-size: 1rem;
+      }
+
+      .options {
+        gap: 10px;
+      }
+
+      .option {
+        padding: 12px;
+      }
+
+      .option span {
+        line-height: 1.35;
+      }
+
+      .actions {
+        position: sticky;
+        bottom: 0;
+        z-index: 10;
+        margin: 0 calc(-1 * var(--space-3)) calc(-1 * var(--space-3)) calc(-1 * var(--space-3));
+        padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+        background: rgba(247, 243, 234, 0.95);
+        backdrop-filter: blur(8px);
+        border-top: 1px solid var(--card-border);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+      }
+
+      .actions button {
+        width: 100%;
+        min-height: 48px;
+        font-size: 1rem;
+      }
+
+      #next-btn,
+      #reset-btn {
+        grid-column: span 2;
+      }
+
+      .hint {
+        display: none;
+      }
+    }
+
+    @media (min-width: 768px) {
+      body {
+        padding: var(--space-5);
+      }
+
+      .quiz-content {
+        padding: var(--space-5);
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="quiz-card">
+      <header id="quiz-header" class="quiz-header">
+        <p class="badge">training-quiz • yoga relax</p>
+        <h1>Узнай, что нужно твоему телу прямо сейчас за 60 секунд</h1>
+        <p class="subtitle">
+          Пройди мини-диагностику и получи персональную рекомендацию тренировки от Марины Смирновой.
+        </p>
+      </header>
+
+      <div class="quiz-content">
+        <div id="progress-wrap" class="progress-wrap">
+          <div class="progress-top">
+            <p id="progress-label">Вопрос 1 из 6</p>
+            <p id="progress-percent">17%</p>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+
+        <section id="step-card" class="step-card" aria-live="polite">
+          <h2 id="question-title" class="step-title"></h2>
+          <p id="question-subtitle" class="step-subtitle"></p>
+          <div id="options" class="options"></div>
+        </section>
+
+        <section id="final-screen" class="final-screen" aria-live="polite">
+          <p class="final-screen-text">На основе твоих ответов я выбрала отптимальную тенировку под твой запрос</p>
+          <div class="final-buttons">
+            <button id="reveal-result-btn" class="btn-final-primary" type="button">УЗНАТЬ РЕЗУЛЬТАТ</button>
+            <button id="restart-result-btn" class="btn-secondary" type="button">Пройти заново</button>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button id="prev-btn" class="btn-secondary" type="button">Назад</button>
+          <button id="next-btn" class="btn-primary" type="button">Далее</button>
+          <button id="reset-btn" class="btn-secondary" type="button">Пройти заново</button>
+          <p id="hint" class="hint"></p>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const questions = [
+        {
+          id: "q1",
+          title: "Q1. Как давно ты занимался(ась) спортом?",
+          options: [
+            { code: "A", text: "Никогда или очень давно (год+)" },
+            { code: "B", text: "Иногда, но без системы" },
+            { code: "C", text: "Регулярно занимаюсь сейчас или последние полгода" }
+          ]
+        },
+        {
+          id: "q2",
+          title: "Q2. Какая у тебя главная цель?",
+          options: [
+            { code: "A", text: "Сбросить вес" },
+            { code: "B", text: "Убрать напряжение, стать гибче, чувствовать себя легче" },
+            { code: "C", text: "Подтянуть тело: ягодицы, живот, осанка" },
+            { code: "D", text: "Укрепить верх тела: руки, плечи, спина" }
+          ]
+        },
+        {
+          id: "q3",
+          title: "Q3. Как выглядит твой типичный день?",
+          options: [
+            { code: "A", text: "Сижу за компьютером 6+ часов" },
+            { code: "B", text: "Смешанный образ жизни: и сижу, и двигаюсь" },
+            { code: "C", text: "Физически активен(на): хожу, стою, двигаюсь много" }
+          ]
+        },
+        {
+          id: "q4",
+          title: "Q4. Есть ли у тебя боли или дискомфорт?",
+          options: [
+            { code: "A", text: "Да, болит шея / спина / плечи (сидячая работа)" },
+            { code: "B", text: "Бывают боли при нагрузке, есть старые травмы" },
+            { code: "C", text: "Нет, всё в порядке" }
+          ]
+        },
+        {
+          id: "q5",
+          title: "Q5. Как ты бы описал(а) своё тело сейчас?",
+          options: [
+            { code: "A", text: "«Деревянное», скованное, почти не тянется" },
+            { code: "B", text: "Нормальная форма, но хочется больше тонуса" },
+            { code: "C", text: "Достаточно гибкое и подвижное" }
+          ]
+        },
+        {
+          id: "q6",
+          title: "Q6. Есть ли у тебя проблемы с сердцем или высокое давление?",
+          options: [
+            { code: "A", text: "Да, есть" },
+            { code: "B", text: "Нет" }
+          ]
+        }
+      ];
+
+      const progressLabel = document.getElementById("progress-label");
+      const progressPercent = document.getElementById("progress-percent");
+      const progressFill = document.getElementById("progress-fill");
+      const quizHeader = document.getElementById("quiz-header");
+      const progressWrap = document.getElementById("progress-wrap");
+      const stepCard = document.getElementById("step-card");
+      const finalScreen = document.getElementById("final-screen");
+      const revealResultButton = document.getElementById("reveal-result-btn");
+      const restartResultButton = document.getElementById("restart-result-btn");
+      const questionTitle = document.getElementById("question-title");
+      const questionSubtitle = document.getElementById("question-subtitle");
+      const optionsRoot = document.getElementById("options");
+      const prevButton = document.getElementById("prev-btn");
+      const nextButton = document.getElementById("next-btn");
+      const resetButton = document.getElementById("reset-btn");
+      const hint = document.getElementById("hint");
+
+      const answers = {};
+      let currentIndex = 0;
+
+      questions.forEach(function (question) {
+        answers[question.id] = "";
+      });
+
+      function updateProgress() {
+        const total = questions.length;
+        const step = currentIndex + 1;
+        const percent = Math.round((step / total) * 100);
+        progressLabel.textContent = "Вопрос " + step + " из " + total;
+        progressPercent.textContent = percent + "%";
+        progressFill.style.width = percent + "%";
+      }
+
+      function renderStep() {
+        const question = questions[currentIndex];
+        const selectedCode = answers[question.id];
+
+        questionTitle.textContent = question.title;
+        questionSubtitle.textContent = question.id === "q6"
+          ? "Фильтр безопасности для HIIT"
+          : "";
+
+        const optionsMarkup = question.options
+          .map(function (option) {
+            const checked = option.code === selectedCode ? " checked" : "";
+            return (
+              '<label class="option">' +
+                '<input type="radio" name="' + question.id + '" value="' + option.code + '"' + checked + " />" +
+                '<span class="option-code">' + option.code + "</span>" +
+                "<span>" + option.text + "</span>" +
+              "</label>"
+            );
+          })
+          .join("");
+
+        optionsRoot.innerHTML = optionsMarkup;
+
+        prevButton.disabled = currentIndex === 0;
+        prevButton.style.opacity = currentIndex === 0 ? "0.5" : "1";
+        prevButton.style.cursor = currentIndex === 0 ? "not-allowed" : "pointer";
+
+        nextButton.textContent = "Далее";
+        nextButton.disabled = !selectedCode;
+        nextButton.classList.remove("btn-result-cta");
+
+        updateProgress();
+      }
+
+      optionsRoot.addEventListener("change", function (event) {
+        const target = event.target;
+        if (!(target instanceof HTMLInputElement)) {
+          return;
+        }
+        const question = questions[currentIndex];
+        if (target.name === question.id) {
+          answers[question.id] = target.value;
+          nextButton.disabled = false;
+        }
+      });
+
+      function resolveRoute(answers) {
+        const q1 = answers.q1;
+        const q2 = answers.q2;
+        const q3 = answers.q3;
+        const q4 = answers.q4;
+        const q5 = answers.q5;
+        const q6 = answers.q6;
+
+        if (q6 === "A") {
+          if (q4 === "A" || q5 === "A" || q3 === "A") {
+            return "mobility";
+          }
+          return "pilatesMat1";
+        }
+
+        if (q1 === "A") {
+          return "pilatesMat1";
+        }
+
+        if (q4 === "A" || q5 === "A" || q3 === "A") {
+          return "mobility";
+        }
+
+        if (q2 === "A" && (q1 === "A" || q1 === "B") && q6 === "B") {
+          return "functionalMove";
+        }
+
+        if (q2 === "A" && q1 === "C" && q6 === "B") {
+          return "hiit";
+        }
+
+        if (q2 === "C" && (q1 === "A" || q1 === "B")) {
+          return "glutesCore";
+        }
+
+        if (q2 === "C" && q1 === "C") {
+          return "pilatesMat2";
+        }
+
+        if (q2 === "D" || (q4 === "A" && q3 === "A")) {
+          return "upperBody";
+        }
+
+        return "mobility";
+      }
+
+      function showFinalScreen() {
+        document.body.classList.add("pre-result-mode");
+        stepCard.style.display = "none";
+        if (finalScreen) {
+          finalScreen.classList.add("show");
+        }
+        progressLabel.textContent = "Прогресс";
+        progressPercent.textContent = "100%";
+        progressFill.style.width = "100%";
+        if (progressWrap) {
+          progressWrap.style.display = "grid";
+        }
+      }
+
+      function resetQuiz() {
+        currentIndex = 0;
+        questions.forEach(function (question) {
+          answers[question.id] = "";
+        });
+        if (finalScreen) {
+          finalScreen.classList.remove("show");
+        }
+        document.body.classList.remove("pre-result-mode");
+        document.body.classList.remove("result-mode");
+        stepCard.style.display = "block";
+        if (quizHeader) {
+          quizHeader.style.display = "block";
+        }
+        if (progressWrap) {
+          progressWrap.style.display = "grid";
+        }
+        nextButton.style.display = "inline-block";
+        prevButton.style.display = "inline-block";
+        resetButton.style.display = "none";
+        revealResultButton.disabled = false;
+        revealResultButton.textContent = "УЗНАТЬ РЕЗУЛЬТАТ";
+        hint.textContent = "";
+        renderStep();
+      }
+
+      prevButton.addEventListener("click", function () {
+        if (currentIndex === 0) {
+          return;
+        }
+        currentIndex -= 1;
+        renderStep();
+      });
+
+      nextButton.addEventListener("click", function () {
+        if (currentIndex < questions.length - 1) {
+          currentIndex += 1;
+          renderStep();
+          return;
+        }
+
+        showFinalScreen();
+        if (finalScreen) {
+          finalScreen.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+
+      resetButton.addEventListener("click", resetQuiz);
+      revealResultButton.addEventListener("click", function () {
+        revealResultButton.disabled = true;
+        revealResultButton.textContent = "РЕЗУЛЬТАТ УЖЕ ОТКРЫТ";
+      });
+      restartResultButton.addEventListener("click", resetQuiz);
+
+      resetButton.style.display = "none";
+      renderStep();
+    });
+  </script>
+</body>
+</html>
