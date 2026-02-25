@@ -171,6 +171,7 @@
       <button id="go-to-botlab" type="button">БОТЛАБ</button>
       <button id="go-to-lead-for-quiz" type="button">Лид за квиз</button>
       <button id="go-to-training-quiz" type="button">Квиз по тренировкам</button>
+      <button id="go-to-training-calendar" type="button">Календарь записи</button>
     </div>
   </main>
 
@@ -189,6 +190,7 @@
       const botlabButton = document.getElementById("go-to-botlab");
       const leadForQuizButton = document.getElementById("go-to-lead-for-quiz");
       const trainingQuizButton = document.getElementById("go-to-training-quiz");
+      const trainingCalendarButton = document.getElementById("go-to-training-calendar");
 
       if (appButton) {
         appButton.addEventListener("click", function () {
@@ -217,6 +219,12 @@
       if (trainingQuizButton) {
         trainingQuizButton.addEventListener("click", function () {
           window.location.href = "./training-quiz/dist/index.html";
+        });
+      }
+
+      if (trainingCalendarButton) {
+        trainingCalendarButton.addEventListener("click", function () {
+          window.location.href = "./training-calendar/index.html";
         });
       }
 

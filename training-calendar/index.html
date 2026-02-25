@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Календарь записи</title>
+  <style>
+    :root {
+      --bg: #f6f3ee;
+      --surface: #fffdf9;
+      --surface-soft: #f1ece5;
+      --border: #d8cec1;
+      --text: #3c3a37;
+      --text-soft: #6f675e;
+      --accent: #8f9b82;
+      --accent-strong: #79876a;
+      --accent-contrast: #ffffff;
+      --cell-hover: #ebe4db;
+      --selected: #d9e1d0;
+      --shadow: rgba(60, 58, 55, 0.08);
+      --radius-m: 12px;
+      --radius-s: 8px;
+      --space-4: 4px;
+      --space-8: 8px;
+      --space-12: 12px;
+      --space-16: 16px;
+      --space-20: 20px;
+      --space-24: 24px;
+      --space-32: 32px;
+      --cell-width: 96px;
+      --cell-height: 72px;
+      --time-cell-width: 80px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      background: linear-gradient(180deg, var(--bg) 0%, #efe8de 100%);
+      color: var(--text);
+      padding: var(--space-12);
+    }
+
+    header,
+    main,
+    footer {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: var(--space-16);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      color: var(--text);
+    }
+
+    .table-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-m);
+      box-shadow: 0 10px 24px var(--shadow);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-bottom: var(--space-20);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 640px;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--border);
+      padding: var(--space-12);
+      text-align: center;
+      vertical-align: middle;
+      background: var(--surface);
+      width: var(--cell-width);
+      min-width: var(--cell-width);
+      max-width: var(--cell-width);
+      height: var(--cell-height);
+      font-size: 0.82rem;
+    }
+
+    thead th {
+      background: var(--surface-soft);
+      color: var(--text-soft);
+      font-weight: 600;
+      font-size: 0.9rem;
+      min-width: 112px;
+      height: 40px;
+    }
+
+    #week-header-row th:first-child {
+      width: var(--time-cell-width);
+      min-width: var(--time-cell-width);
+      max-width: var(--time-cell-width);
+    }
+
+    .time-cell {
+      width: var(--time-cell-width);
+      min-width: var(--time-cell-width);
+      max-width: var(--time-cell-width);
+      font-weight: 600;
+      color: var(--text-soft);
+      background: var(--surface-soft);
+    }
+
+    .slot-btn {
+      width: 100%;
+      min-height: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-s);
+      background: transparent;
+      color: var(--text);
+      padding: var(--space-8);
+      font: inherit;
+      font-size: 0.8rem;
+      line-height: 1.2;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+
+    .slot-btn:hover {
+      background: var(--cell-hover);
+      border-color: var(--accent);
+    }
+
+    .slot-btn.selected {
+      background: var(--selected);
+      border-color: var(--accent);
+      color: #33432b;
+      font-weight: 600;
+    }
+
+    .slot-btn:disabled {
+      cursor: not-allowed;
+      background: #f3efe9;
+      color: #9b9389;
+      border-color: #d9d1c7;
+    }
+
+    .slot-btn:disabled:hover {
+      background: #f3efe9;
+      border-color: #d9d1c7;
+    }
+
+    .slot-empty {
+      min-height: 100%;
+      background: var(--surface);
+    }
+
+    footer {
+      display: flex;
+      justify-content: center;
+      padding-bottom: var(--space-24);
+    }
+
+    .submit-btn {
+      width: 100%;
+      max-width: 100%;
+      border: none;
+      border-radius: 999px;
+      background: var(--accent);
+      color: var(--accent-contrast);
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      padding: var(--space-12) var(--space-20);
+      cursor: pointer;
+      transition: background-color 0.2s ease, opacity 0.2s ease;
+      opacity: 0.5;
+    }
+
+    .submit-btn:disabled {
+      cursor: not-allowed;
+    }
+
+    .submit-btn:not(:disabled) {
+      opacity: 1;
+    }
+
+    .submit-btn:not(:disabled):hover {
+      background: var(--accent-strong);
+    }
+
+    @media (min-width: 768px) {
+      :root {
+        --cell-width: 124px;
+        --cell-height: 84px;
+      }
+
+      body {
+        padding: var(--space-32) var(--space-24);
+      }
+
+      header {
+        margin-bottom: var(--space-20);
+      }
+
+      h1 {
+        font-size: clamp(1.4rem, 4vw, 2rem);
+      }
+
+      table {
+        min-width: 680px;
+      }
+
+      th,
+      td {
+        font-size: 0.9rem;
+      }
+
+      .slot-btn {
+        font-size: 0.9rem;
+      }
+
+      .submit-btn {
+        max-width: 320px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Выбери тренировку и нажми Записаться</h1>
+  </header>
+
+  <main>
+    <section class="table-wrap" aria-label="Расписание тренировок">
+      <table>
+        <thead>
+          <tr id="week-header-row"></tr>
+        </thead>
+        <tbody id="schedule-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <footer>
+    <button id="enroll-btn" class="submit-btn" type="button" disabled>Записаться</button>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const weekdays = [
+        { key: "mon", label: "Пн" },
+        { key: "tue", label: "Вт" },
+        { key: "wed", label: "Ср" },
+        { key: "thu", label: "Чт" },
+        { key: "fri", label: "Пт" },
+        { key: "sat", label: "Сб" },
+        { key: "sun", label: "Вс" }
+      ];
+
+      const trainings = [
+        { name: "Pilates mat 1", day: "mon", time: 8 },
+        { name: "Pilates mat 1", day: "wed", time: 8 },
+        { name: "Pilates mat 1", day: "fri", time: 8 },
+        { name: "Pilates mat 2", day: "tue", time: 7 },
+        { name: "Pilates mat 2", day: "thu", time: 7 },
+        { name: "HIIT", day: "tue", time: 8 },
+        { name: "HIIT", day: "thu", time: 8 },
+        { name: "Mobility", day: "mon", time: 9 },
+        { name: "Mobility", day: "wed", time: 9 },
+        { name: "Mobility", day: "fri", time: 9 },
+        { name: "Functional move", day: "tue", time: 17 },
+        { name: "Functional move", day: "thu", time: 17 },
+        { name: "Glutes+core", day: "tue", time: 18 },
+        { name: "Upper body", day: "thu", time: 18 }
+      ];
+
+      const weekHeaderRow = document.getElementById("week-header-row");
+      const scheduleBody = document.getElementById("schedule-body");
+      const enrollButton = document.getElementById("enroll-btn");
+
+      let selectedSlot = null;
+
+      function pad(value) {
+        return String(value).padStart(2, "0");
+      }
+
+      function formatDate(date) {
+        return pad(date.getDate()) + "." + pad(date.getMonth() + 1);
+      }
+
+      function formatTime(time) {
+        return time + ".00";
+      }
+
+      function getMonday(today) {
+        const date = new Date(today);
+        const day = date.getDay();
+        const diff = day === 0 ? -6 : 1 - day;
+        date.setDate(date.getDate() + diff);
+        date.setHours(0, 0, 0, 0);
+        return date;
+      }
+
+      function buildWeekDates() {
+        const todayStart = new Date();
+        todayStart.setHours(0, 0, 0, 0);
+        const monday = getMonday(new Date());
+        return weekdays.map(function (weekday, index) {
+          const date = new Date(monday);
+          date.setDate(monday.getDate() + index);
+          date.setHours(0, 0, 0, 0);
+          return {
+            key: weekday.key,
+            label: weekday.label,
+            dateLabel: formatDate(date),
+            isSelectable: date.getTime() > todayStart.getTime()
+          };
+        });
+      }
+
+      function renderHeader(weekDates) {
+        const timeHeader = document.createElement("th");
+        timeHeader.textContent = "Время";
+        weekHeaderRow.appendChild(timeHeader);
+
+        weekDates.forEach(function (day) {
+          const th = document.createElement("th");
+          th.textContent = day.label + " " + day.dateLabel;
+          weekHeaderRow.appendChild(th);
+        });
+      }
+
+      function buildTrainingMap() {
+        const map = new Map();
+        trainings.forEach(function (training) {
+          const key = training.day + "-" + training.time;
+          if (!map.has(key)) {
+            map.set(key, []);
+          }
+          map.get(key).push(training.name);
+        });
+        return map;
+      }
+
+      function getVisibleTimes() {
+        const times = new Set();
+        trainings.forEach(function (training) {
+          if (training.time >= 7 && training.time <= 18) {
+            times.add(training.time);
+          }
+        });
+        return Array.from(times).sort(function (a, b) {
+          return a - b;
+        });
+      }
+
+      function clearSelection() {
+        const selected = document.querySelector(".slot-btn.selected");
+        if (selected) {
+          selected.classList.remove("selected");
+        }
+      }
+
+      function handleSlotSelect(button) {
+        clearSelection();
+        button.classList.add("selected");
+
+        selectedSlot = {
+          name: button.dataset.trainingName,
+          day: button.dataset.dayLabel,
+          date: button.dataset.dateLabel,
+          time: button.dataset.timeLabel
+        };
+
+        enrollButton.disabled = false;
+      }
+
+      function renderTableRows(weekDates, trainingMap, visibleTimes) {
+        visibleTimes.forEach(function (time) {
+          const row = document.createElement("tr");
+
+          const timeCell = document.createElement("td");
+          timeCell.className = "time-cell";
+          timeCell.textContent = formatTime(time);
+          row.appendChild(timeCell);
+
+          weekDates.forEach(function (day) {
+            const cell = document.createElement("td");
+            const key = day.key + "-" + time;
+            const trainingNames = trainingMap.get(key);
+
+            if (trainingNames && trainingNames.length > 0) {
+              trainingNames.forEach(function (trainingName) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "slot-btn";
+                button.textContent = trainingName;
+                button.dataset.trainingName = trainingName;
+                button.dataset.dayLabel = day.label;
+                button.dataset.dateLabel = day.dateLabel;
+                button.dataset.timeLabel = formatTime(time);
+
+                if (day.isSelectable) {
+                  button.addEventListener("click", function () {
+                    handleSlotSelect(button);
+                  });
+                } else {
+                  button.disabled = true;
+                }
+
+                cell.appendChild(button);
+              });
+            } else {
+              const emptyState = document.createElement("div");
+              emptyState.className = "slot-empty";
+              cell.appendChild(emptyState);
+            }
+
+            row.appendChild(cell);
+          });
+
+          scheduleBody.appendChild(row);
+        });
+      }
+
+      function init() {
+        const weekDates = buildWeekDates();
+        const trainingMap = buildTrainingMap();
+        const visibleTimes = getVisibleTimes();
+
+        renderHeader(weekDates);
+        renderTableRows(weekDates, trainingMap, visibleTimes);
+      }
+
+      enrollButton.addEventListener("click", function () {
+        if (!selectedSlot) {
+          return;
+        }
+
+        const message = "Вы записаны: " +
+          selectedSlot.name + ", " +
+          selectedSlot.day + " " + selectedSlot.date + ", " +
+          selectedSlot.time;
+
+        window.alert(message);
+      });
+
+      init();
+    });
+  </script>
+</body>
+</html>
