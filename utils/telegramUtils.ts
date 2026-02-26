@@ -55,7 +55,6 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
         return;
       }
 
-      alert("Не удалось отправить сигнал");
     }
 
     // Always try to close the app after sending the signal
@@ -67,12 +66,10 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
           console.log('✅ Telegram WebApp closed successfully');
         } catch (closeError) {
           console.error('❌ Failed to close WebApp:', closeError);
-          alert("Приложение не удалось закрыть автоматически");
         }
       }, 200);
     } else {
       console.warn('⚠️ Telegram WebApp not available, showing success message');
-      alert("Данные отправлены! Приложение можно закрыть.");
     }
   } catch (error) {
     console.error('💥 Network error sending signal:', error);
@@ -94,8 +91,6 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
         console.error('❌ Fallback also failed:', fallbackError);
       }
     }
-
-    alert("Ошибка при отправке сигнала. Попробуйте еще раз.");
 
     // Try to close anyway in case of error
     if ((window as any).Telegram?.WebApp) {
