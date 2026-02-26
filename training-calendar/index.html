@@ -332,6 +332,10 @@
         return pad(date.getDate()) + "." + pad(date.getMonth() + 1);
       }
 
+      function formatPayloadDate(date) {
+        return pad(date.getDate()) + ":" + pad(date.getMonth() + 1) + ":" + date.getFullYear();
+      }
+
       function formatTime(time) {
         return time + ".00";
       }
@@ -341,6 +345,9 @@
         const day = date.getDay();
         const diff = day === 0 ? -6 : 1 - day;
         date.setDate(date.getDate() + diff);
+        if (day === 5 || day === 6 || day === 0) {
+          date.setDate(date.getDate() + 7);
+        }
         date.setHours(0, 0, 0, 0);
         return date;
       }
@@ -357,6 +364,7 @@
             key: weekday.key,
             label: weekday.label,
             dateLabel: formatDate(date),
+            payloadDate: formatPayloadDate(date),
             isSelectable: date.getTime() > todayStart.getTime()
           };
         });
@@ -412,7 +420,7 @@
         selectedSlot = {
           name: button.dataset.trainingName,
           day: button.dataset.dayLabel,
-          date: button.dataset.dateLabel,
+          date: button.dataset.payloadDate,
           time: button.dataset.timeLabel
         };
 
@@ -442,6 +450,7 @@
                 button.dataset.trainingName = trainingName;
                 button.dataset.dayLabel = day.label;
                 button.dataset.dateLabel = day.dateLabel;
+                button.dataset.payloadDate = day.payloadDate;
                 button.dataset.timeLabel = formatTime(time);
 
                 if (day.isSelectable) {
@@ -483,7 +492,8 @@
 
         const payload = {
           training: selectedSlot.name,
-          day: selectedSlot.day + " " + selectedSlot.date,
+          day: selectedSlot.day,
+          date: selectedSlot.date,
           time: selectedSlot.time
         };
         const apiUrl = "https://web-production-b2434.up.railway.app";
