@@ -5,11 +5,13 @@
 ## Требования
 
 - Node.js 18+
+- Установленные зависимости (`npm install` в папке `training-calendar`)
 
 ## Запуск локально (только на этом компьютере)
 
 ```bash
 cd training-calendar
+npm install
 npm run start:local
 ```
 
@@ -21,6 +23,7 @@ npm run start:local
 
 ```bash
 cd training-calendar
+npm install
 npm run start:network
 ```
 
@@ -43,6 +46,8 @@ ipconfig getifaddr en1
 ## Деплой на Railway
 
 - Укажи `Root Directory`: `training-calendar` (если деплоишь из этого монорепозитория)
-- `Build Command`: оставить пустым
+- `Build Command`: `npm install`
 - `Start Command`: `npm start`
 - `PORT` в Railway добавлять не нужно: платформа передаст его автоматически
+
+Перед запуском сервер автоматически собирает `telegram-utils.bundle.js` из общего файла `../utils/telegramUtils.ts`.

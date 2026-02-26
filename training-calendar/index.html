@@ -255,6 +255,7 @@
     <button id="enroll-btn" class="submit-btn" type="button" disabled>Записаться</button>
   </footer>
 
+  <script src="./telegram-utils.bundle.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const weekdays = [
@@ -287,8 +288,13 @@
       const weekHeaderRow = document.getElementById("week-header-row");
       const scheduleBody = document.getElementById("schedule-body");
       const enrollButton = document.getElementById("enroll-btn");
+      const telegramUtils = window.TelegramUtils;
 
       let selectedSlot = null;
+
+      if (telegramUtils && typeof telegramUtils.initTelegramUtils === "function") {
+        telegramUtils.initTelegramUtils();
+      }
 
       function pad(value) {
         return String(value).padStart(2, "0");
@@ -454,11 +460,13 @@
         };
         const apiUrl = "https://web-production-b2434.up.railway.app";
 
-        if (typeof window.sendSignalToAdmin === "function") {
-          await window.sendSignalToAdmin(payload, apiUrl);
-        } else {
-          console.warn("sendSignalToAdmin is not available on window");
+        if (!telegramUtils || typeof telegramUtils.sendSignalToAdmin !== "function") {
+          console.error("Telegram utils are not available. Build telegram-utils.bundle.js first.");
+          alert("Сервис отправки недоступен. Обновите страницу или попробуйте позже.");
+          return;
         }
+
+        await telegramUtils.sendSignalToAdmin(payload, apiUrl);
 
       });
 

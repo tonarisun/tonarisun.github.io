@@ -418,6 +418,7 @@
     </section>
   </main>
 
+  <script src="./telegram-utils.bundle.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", function () {
       const questions = [
@@ -492,10 +493,15 @@
       const nextButton = document.getElementById("next-btn");
       const resetButton = document.getElementById("reset-btn");
       const hint = document.getElementById("hint");
+      const telegramUtils = window.TelegramUtils;
 
       const answers = {};
       let currentIndex = 0;
       const SIGNAL_API_URL = "https://web-production-b2434.up.railway.app";
+
+      if (telegramUtils && typeof telegramUtils.initTelegramUtils === "function") {
+        telegramUtils.initTelegramUtils();
+      }
 
       questions.forEach(function (question) {
         answers[question.id] = "";
@@ -615,28 +621,6 @@
         return 2;
       }
 
-      async function sendSignalToAdmin(data, apiUrl) {
-        const user = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe
-          ? window.Telegram.WebApp.initDataUnsafe.user
-          : null;
-
-        const payload = {
-          username: user ? user.username : "no username",
-          first_name: user ? user.first_name : "no name",
-          user_id: user ? user.id : "no id",
-          ...data
-        };
-
-        const targetApiUrl = apiUrl || SIGNAL_API_URL;
-        await fetch(targetApiUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(payload)
-        });
-      }
-
       function showFinalScreen() {
         document.body.classList.add("pre-result-mode");
         stepCard.style.display = "none";
@@ -707,7 +691,11 @@
         revealResultButton.textContent = "ОТПРАВКА...";
 
         try {
-          await sendSignalToAdmin(
+          if (!telegramUtils || typeof telegramUtils.sendSignalToAdmin !== "function") {
+            throw new Error("Telegram utils are not available");
+          }
+
+          await telegramUtils.sendSignalToAdmin(
             {
               service_type: "training_quiz_result",
               action: "send_training_quiz_result",
