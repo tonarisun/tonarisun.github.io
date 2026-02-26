@@ -127,7 +127,7 @@
       border-radius: var(--radius-s);
       background: transparent;
       color: var(--text);
-      padding: var(--space-8);
+      padding: var(--space-8) var(--space-4);
       font: inherit;
       font-size: 0.8rem;
       line-height: 1.2;
@@ -442,17 +442,24 @@
         renderTableRows(weekDates, trainingMap, visibleTimes);
       }
 
-      enrollButton.addEventListener("click", function () {
+      enrollButton.addEventListener("click", async function () {
         if (!selectedSlot) {
           return;
         }
 
-        const message = "Вы записаны: " +
-          selectedSlot.name + ", " +
-          selectedSlot.day + " " + selectedSlot.date + ", " +
-          selectedSlot.time;
+        const payload = {
+          training: selectedSlot.name,
+          day: selectedSlot.day + " " + selectedSlot.date,
+          time: selectedSlot.time
+        };
+        const apiUrl = "https://web-production-b2434.up.railway.app";
 
-        window.alert(message);
+        if (typeof window.sendSignalToAdmin === "function") {
+          await window.sendSignalToAdmin(payload, apiUrl);
+        } else {
+          console.warn("sendSignalToAdmin is not available on window");
+        }
+
       });
 
       init();
