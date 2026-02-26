@@ -34,10 +34,10 @@
   </script>
   <style>
     :root {
-      --bg: #f6f3ee;
+      --bg: #ccb3bf;
       --surface: #fffdf9;
       --surface-soft: #f1ece5;
-      --border: #d8cec1;
+      --border: #957c91;
       --text: #3c3a37;
       --text-soft: #6f675e;
       --accent: #8f9b82;
@@ -91,6 +91,38 @@
       font-weight: 600;
       letter-spacing: 0.01em;
       color: var(--text);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-12);
+      flex-wrap: wrap;
+    }
+
+    .week-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-8);
+    }
+
+    .next-week-btn {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--surface);
+      color: var(--text);
+      font: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: var(--space-8) var(--space-12);
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    .next-week-btn:hover {
+      background: var(--cell-hover);
+      border-color: var(--accent);
     }
 
     .table-wrap {
@@ -265,7 +297,13 @@
 </head>
 <body>
   <header>
-    <h1>Выбери тренировку и нажми Записаться</h1>
+    <div class="header-row">
+      <h1>Выбери тренировку и нажми Записаться</h1>
+      <div class="week-nav">
+        <button id="prev-week-btn" class="next-week-btn" type="button" hidden>←</button>
+        <button id="next-week-btn" class="next-week-btn" type="button">→</button>
+      </div>
+    </div>
   </header>
 
   <main>
@@ -316,9 +354,12 @@
       const weekHeaderRow = document.getElementById("week-header-row");
       const scheduleBody = document.getElementById("schedule-body");
       const enrollButton = document.getElementById("enroll-btn");
+      const prevWeekButton = document.getElementById("prev-week-btn");
+      const nextWeekButton = document.getElementById("next-week-btn");
       const telegramUtils = window.TelegramUtils;
 
       let selectedSlot = null;
+      let weekOffset = 0;
 
       if (telegramUtils && typeof telegramUtils.initTelegramUtils === "function") {
         telegramUtils.initTelegramUtils();
@@ -352,10 +393,11 @@
         return date;
       }
 
-      function buildWeekDates() {
+      function buildWeekDates(offsetWeeks) {
         const todayStart = new Date();
         todayStart.setHours(0, 0, 0, 0);
         const monday = getMonday(new Date());
+        monday.setDate(monday.getDate() + offsetWeeks * 7);
         return weekdays.map(function (weekday, index) {
           const date = new Date(monday);
           date.setDate(monday.getDate() + index);
@@ -477,13 +519,33 @@
       }
 
       function init() {
-        const weekDates = buildWeekDates();
+        const weekDates = buildWeekDates(weekOffset);
         const trainingMap = buildTrainingMap();
         const visibleTimes = getVisibleTimes();
+
+        weekHeaderRow.innerHTML = "";
+        scheduleBody.innerHTML = "";
+        clearSelection();
+        selectedSlot = null;
+        enrollButton.disabled = true;
+        prevWeekButton.hidden = weekOffset === 0;
 
         renderHeader(weekDates);
         renderTableRows(weekDates, trainingMap, visibleTimes);
       }
+
+      prevWeekButton.addEventListener("click", function () {
+        if (weekOffset === 0) {
+          return;
+        }
+        weekOffset -= 1;
+        init();
+      });
+
+      nextWeekButton.addEventListener("click", function () {
+        weekOffset += 1;
+        init();
+      });
 
       enrollButton.addEventListener("click", async function () {
         if (!selectedSlot) {
