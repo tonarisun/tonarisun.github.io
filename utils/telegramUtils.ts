@@ -13,6 +13,95 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
     ...data
   };
 
+  const getTelegramWebApp = (): any => {
+    const directWebApp = (window as any).Telegram?.WebApp;
+    if (directWebApp) {
+      return directWebApp;
+    }
+
+    // Some environments expose Telegram WebApp only on parent window.
+    if (window.parent && window.parent !== window) {
+      try {
+        const parentWebApp = (window.parent as any).Telegram?.WebApp;
+        if (parentWebApp) {
+          console.log('📱 Using Telegram WebApp from parent window');
+          return parentWebApp;
+        }
+      } catch (parentAccessError) {
+        console.warn('⚠️ Cannot access parent Telegram WebApp:', parentAccessError);
+      }
+    }
+
+    return undefined;
+  };
+
+  const closeTelegramWebApp = (): void => {
+    const webApp = getTelegramWebApp();
+
+    const closeViaProxy = (): boolean => {
+      const webviewProxy = (window as any).TelegramWebviewProxy;
+      if (!webviewProxy || typeof webviewProxy.postEvent !== "function") {
+        return false;
+      }
+      try {
+        webviewProxy.postEvent('web_app_close');
+        console.log('✅ Close signal sent via TelegramWebviewProxy');
+        return true;
+      } catch (proxyError) {
+        console.warn('⚠️ Failed to close via TelegramWebviewProxy:', proxyError);
+        return false;
+      }
+    };
+
+    if (!webApp || typeof webApp.close !== "function") {
+      console.warn('⚠️ Telegram WebApp is unavailable, cannot close app');
+      if (closeViaProxy()) {
+        return;
+      }
+      try {
+        window.close();
+        console.log('✅ window.close() called as fallback');
+      } catch (windowCloseError) {
+        console.warn('⚠️ window.close() fallback failed:', windowCloseError);
+      }
+      return;
+    }
+
+    try {
+      if (typeof webApp.disableClosingConfirmation === "function") {
+        webApp.disableClosingConfirmation();
+      }
+    } catch (confirmationError) {
+      console.warn('⚠️ Failed to disable closing confirmation:', confirmationError);
+    }
+
+    const tryClose = () => {
+      try {
+        webApp.close();
+        return true;
+      } catch (closeError) {
+        console.error('❌ Failed to close WebApp:', closeError);
+        return false;
+      }
+    };
+
+    console.log('🔒 Attempting to close Telegram WebApp');
+    const closed = tryClose();
+
+    // Some Telegram clients ignore the first close call while UI transitions complete.
+    setTimeout(() => {
+      if (!closed) {
+        tryClose();
+        return;
+      }
+      try {
+        webApp.close();
+      } catch (closeError) {
+        console.error('❌ Failed to close WebApp on second attempt:', closeError);
+      }
+    }, 250);
+  };
+
   try {
     console.log('📱 Telegram WebApp available:', !!(window as any).Telegram?.WebApp);
     console.log('👤 User data:', user);
@@ -57,20 +146,7 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
 
     }
 
-    // Always try to close the app after sending the signal
-    if ((window as any).Telegram?.WebApp) {
-      console.log('🔒 Attempting to close Telegram WebApp');
-      setTimeout(() => {
-        try {
-          (window as any).Telegram.WebApp.close();
-          console.log('✅ Telegram WebApp closed successfully');
-        } catch (closeError) {
-          console.error('❌ Failed to close WebApp:', closeError);
-        }
-      }, 200);
-    } else {
-      console.warn('⚠️ Telegram WebApp not available, showing success message');
-    }
+    closeTelegramWebApp();
   } catch (error) {
     console.error('💥 Network error sending signal:', error);
     console.error('🔍 Error details:', {
@@ -95,14 +171,7 @@ export const sendSignalToAdmin = async (data: any, apiUrl?: string): Promise<voi
     // Try to close anyway in case of error
     if ((window as any).Telegram?.WebApp) {
       console.log('🔒 Attempting to close WebApp after error');
-      setTimeout(() => {
-        try {
-          (window as any).Telegram.WebApp.close();
-          console.log('✅ WebApp closed after error');
-        } catch (closeError) {
-          console.error('❌ Failed to close after error:', closeError);
-        }
-      }, 500);
+      closeTelegramWebApp();
     }
   }
 };
@@ -125,8 +194,12 @@ declare global {
             first_name?: string;
           };
         };
+        disableClosingConfirmation?: () => void;
         close: () => void;
       };
+    };
+    TelegramWebviewProxy?: {
+      postEvent: (eventType: string, eventData?: string) => void;
     };
     sendSignalToAdmin: (data: any, apiUrl?: string) => Promise<void>;
   }

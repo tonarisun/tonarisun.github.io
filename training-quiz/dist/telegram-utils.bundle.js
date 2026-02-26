@@ -34,6 +34,83 @@ var TelegramUtils = (() => {
       user_id: user ? user.id : "no id",
       ...data
     };
+    const getTelegramWebApp = () => {
+      const directWebApp = window.Telegram?.WebApp;
+      if (directWebApp) {
+        return directWebApp;
+      }
+      if (window.parent && window.parent !== window) {
+        try {
+          const parentWebApp = window.parent.Telegram?.WebApp;
+          if (parentWebApp) {
+            console.log("\u{1F4F1} Using Telegram WebApp from parent window");
+            return parentWebApp;
+          }
+        } catch (parentAccessError) {
+          console.warn("\u26A0\uFE0F Cannot access parent Telegram WebApp:", parentAccessError);
+        }
+      }
+      return void 0;
+    };
+    const closeTelegramWebApp = () => {
+      const webApp = getTelegramWebApp();
+      const closeViaProxy = () => {
+        const webviewProxy = window.TelegramWebviewProxy;
+        if (!webviewProxy || typeof webviewProxy.postEvent !== "function") {
+          return false;
+        }
+        try {
+          webviewProxy.postEvent("web_app_close");
+          console.log("\u2705 Close signal sent via TelegramWebviewProxy");
+          return true;
+        } catch (proxyError) {
+          console.warn("\u26A0\uFE0F Failed to close via TelegramWebviewProxy:", proxyError);
+          return false;
+        }
+      };
+      if (!webApp || typeof webApp.close !== "function") {
+        console.warn("\u26A0\uFE0F Telegram WebApp is unavailable, cannot close app");
+        if (closeViaProxy()) {
+          return;
+        }
+        try {
+          window.close();
+          console.log("\u2705 window.close() called as fallback");
+        } catch (windowCloseError) {
+          console.warn("\u26A0\uFE0F window.close() fallback failed:", windowCloseError);
+        }
+        return;
+      }
+      try {
+        if (typeof webApp.disableClosingConfirmation === "function") {
+          webApp.disableClosingConfirmation();
+        }
+      } catch (confirmationError) {
+        console.warn("\u26A0\uFE0F Failed to disable closing confirmation:", confirmationError);
+      }
+      const tryClose = () => {
+        try {
+          webApp.close();
+          return true;
+        } catch (closeError) {
+          console.error("\u274C Failed to close WebApp:", closeError);
+          return false;
+        }
+      };
+      console.log("\u{1F512} Attempting to close Telegram WebApp");
+      const closed = tryClose();
+      setTimeout(() => {
+        if (!closed) {
+          tryClose();
+          return;
+        }
+        try {
+          webApp.close();
+        } catch (closeError) {
+          console.error("\u274C Failed to close WebApp on second attempt:", closeError);
+        }
+      }, 250);
+    };
     try {
       console.log("\u{1F4F1} Telegram WebApp available:", !!window.Telegram?.WebApp);
       console.log("\u{1F464} User data:", user);
@@ -66,19 +143,7 @@ var TelegramUtils = (() => {
           return;
         }
       }
-      if (window.Telegram?.WebApp) {
-        console.log("\u{1F512} Attempting to close Telegram WebApp");
-        setTimeout(() => {
-          try {
-            window.Telegram.WebApp.close();
-            console.log("\u2705 Telegram WebApp closed successfully");
-          } catch (closeError) {
-            console.error("\u274C Failed to close WebApp:", closeError);
-          }
-        }, 200);
-      } else {
-        console.warn("\u26A0\uFE0F Telegram WebApp not available, showing success message");
-      }
+      closeTelegramWebApp();
     } catch (error) {
       console.error("\u{1F4A5} Network error sending signal:", error);
       console.error("\u{1F50D} Error details:", {
@@ -99,14 +164,7 @@ var TelegramUtils = (() => {
       }
       if (window.Telegram?.WebApp) {
         console.log("\u{1F512} Attempting to close WebApp after error");
-        setTimeout(() => {
-          try {
-            window.Telegram.WebApp.close();
-            console.log("\u2705 WebApp closed after error");
-          } catch (closeError) {
-            console.error("\u274C Failed to close after error:", closeError);
-          }
-        }, 500);
+        closeTelegramWebApp();
       }
     }
   };
