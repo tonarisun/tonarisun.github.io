@@ -4,6 +4,34 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Календарь записи</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    function initTelegramWebApp() {
+      if (window.Telegram && window.Telegram.WebApp) {
+        console.log("🚀 Telegram WebApp script loaded successfully");
+        window.Telegram.WebApp.ready();
+        console.log("✅ Telegram WebApp initialized");
+      } else {
+        console.log("⚠️ Telegram WebApp script loaded but API not available");
+        setTimeout(initTelegramWebApp, 100);
+      }
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initTelegramWebApp);
+    } else {
+      initTelegramWebApp();
+    }
+
+    window.addEventListener("load", initTelegramWebApp);
+
+    setTimeout(function () {
+      if (!window.Telegram || !window.Telegram.WebApp) {
+        console.log("🔄 Retrying Telegram WebApp initialization...");
+        initTelegramWebApp();
+      }
+    }, 2000);
+  </script>
   <style>
     :root {
       --bg: #f6f3ee;

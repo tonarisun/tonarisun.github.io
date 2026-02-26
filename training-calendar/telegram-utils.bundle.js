@@ -34,10 +34,51 @@ var TelegramUtils = (() => {
       user_id: user ? user.id : "no id",
       ...data
     };
+    const getTelegramWebApp = () => {
+      const directWebApp = window.Telegram?.WebApp;
+      if (directWebApp) {
+        return directWebApp;
+      }
+      if (window.parent && window.parent !== window) {
+        try {
+          const parentWebApp = window.parent.Telegram?.WebApp;
+          if (parentWebApp) {
+            console.log("\u{1F4F1} Using Telegram WebApp from parent window");
+            return parentWebApp;
+          }
+        } catch (parentAccessError) {
+          console.warn("\u26A0\uFE0F Cannot access parent Telegram WebApp:", parentAccessError);
+        }
+      }
+      return void 0;
+    };
     const closeTelegramWebApp = () => {
-      const webApp = window.Telegram?.WebApp;
+      const webApp = getTelegramWebApp();
+      const closeViaProxy = () => {
+        const webviewProxy = window.TelegramWebviewProxy;
+        if (!webviewProxy || typeof webviewProxy.postEvent !== "function") {
+          return false;
+        }
+        try {
+          webviewProxy.postEvent("web_app_close");
+          console.log("\u2705 Close signal sent via TelegramWebviewProxy");
+          return true;
+        } catch (proxyError) {
+          console.warn("\u26A0\uFE0F Failed to close via TelegramWebviewProxy:", proxyError);
+          return false;
+        }
+      };
       if (!webApp || typeof webApp.close !== "function") {
         console.warn("\u26A0\uFE0F Telegram WebApp is unavailable, cannot close app");
+        if (closeViaProxy()) {
+          return;
+        }
+        try {
+          window.close();
+          console.log("\u2705 window.close() called as fallback");
+        } catch (windowCloseError) {
+          console.warn("\u26A0\uFE0F window.close() fallback failed:", windowCloseError);
+        }
         return;
       }
       try {
