@@ -1,0 +1,29 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-lego-yellow: #FFD500;
+  --color-lego-red: #E3000B;
+  --color-lego-blue: #0055BF;
+  --color-lego-green: #00843D;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900;
+  }
+}
+
+.lego-studs {
+  background-image: radial-gradient(circle, rgba(0,0,0,0.1) 20%, transparent 20%);
+  background-size: 20px 20px;
+}
+
+.brick-shadow {
+  box-shadow: 0 4px 0 0 rgba(0,0,0,0.2);
+}
+
+.brick-shadow-active {
+  box-shadow: 0 2px 0 0 rgba(0,0,0,0.2);
+  transform: translateY(2px);
+}
