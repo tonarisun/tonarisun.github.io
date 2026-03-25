@@ -244,6 +244,10 @@
       cursor: pointer;
       transition: background-color 0.2s ease, opacity 0.2s ease;
       opacity: 0.5;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-8);
     }
 
     .submit-btn:disabled {
@@ -256,6 +260,30 @@
 
     .submit-btn:not(:disabled):hover {
       background: var(--accent-strong);
+    }
+
+    .submit-btn__loader {
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      border-top-color: #ffffff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      display: none;
+    }
+
+    .submit-btn.is-loading .submit-btn__loader {
+      display: inline-block;
+    }
+
+    .submit-btn.is-loading .submit-btn__text {
+      opacity: 0.9;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
     }
 
     @media (min-width: 768px) {
@@ -318,7 +346,10 @@
   </main>
 
   <footer>
-    <button id="enroll-btn" class="submit-btn" type="button" disabled>Записаться</button>
+    <button id="enroll-btn" class="submit-btn" type="button" disabled>
+      <span class="submit-btn__text">Записаться</span>
+      <span class="submit-btn__loader" aria-hidden="true"></span>
+    </button>
   </footer>
 
   <script src="./telegram-utils.bundle.js"></script>
@@ -360,6 +391,7 @@
 
       let selectedSlot = null;
       let weekOffset = 0;
+      let isSubmitting = false;
 
       if (telegramUtils && typeof telegramUtils.initTelegramUtils === "function") {
         telegramUtils.initTelegramUtils();
@@ -466,7 +498,13 @@
           time: button.dataset.timeLabel
         };
 
-        enrollButton.disabled = false;
+        enrollButton.disabled = isSubmitting;
+      }
+
+      function setEnrollLoading(shouldLoad) {
+        isSubmitting = shouldLoad;
+        enrollButton.classList.toggle("is-loading", shouldLoad);
+        enrollButton.disabled = shouldLoad || !selectedSlot;
       }
 
       function renderTableRows(weekDates, trainingMap, visibleTimes) {
@@ -527,6 +565,7 @@
         scheduleBody.innerHTML = "";
         clearSelection();
         selectedSlot = null;
+        setEnrollLoading(false);
         enrollButton.disabled = true;
         prevWeekButton.disabled = weekOffset === 0;
 
@@ -548,9 +587,11 @@
       });
 
       enrollButton.addEventListener("click", async function () {
-        if (!selectedSlot) {
+        if (!selectedSlot || isSubmitting) {
           return;
         }
+
+        setEnrollLoading(true);
 
         const payload = {
           training: selectedSlot.name,
@@ -563,10 +604,15 @@
         if (!telegramUtils || typeof telegramUtils.sendSignalToAdmin !== "function") {
           console.error("Telegram utils are not available. Build telegram-utils.bundle.js first.");
           alert("Сервис отправки недоступен. Обновите страницу или попробуйте позже.");
+          setEnrollLoading(false);
           return;
         }
 
-        await telegramUtils.sendSignalToAdmin(payload, apiUrl);
+        try {
+          await telegramUtils.sendSignalToAdmin(payload, apiUrl);
+        } finally {
+          setEnrollLoading(false);
+        }
 
       });
 
