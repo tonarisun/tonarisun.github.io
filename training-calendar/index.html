@@ -410,7 +410,7 @@
       }
 
       function formatTime(time) {
-        return time + ".00";
+        return String(time).padStart(2, "0") + ":00";
       }
 
       function getMonday(today) {
