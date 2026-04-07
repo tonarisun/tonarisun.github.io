@@ -173,6 +173,7 @@
       <button id="go-to-training-quiz" type="button">Квиз по тренировкам</button>
       <button id="go-to-training-calendar" type="button">Календарь записи</button>
       <button id="go-to-school-quiz-fractions" type="button">Квиз по дробям</button>
+      <button id="go-to-portfolio" type="button">Портфолио Ольга</button>
     </div>
   </main>
 
@@ -193,6 +194,7 @@
       const trainingQuizButton = document.getElementById("go-to-training-quiz");
       const trainingCalendarButton = document.getElementById("go-to-training-calendar");
       const schoolQuizFractionsButton = document.getElementById("go-to-school-quiz-fractions");
+      const portfolioButton = document.getElementById("go-to-portfolio");
 
       if (appButton) {
         appButton.addEventListener("click", function () {
@@ -233,6 +235,12 @@
       if (schoolQuizFractionsButton) {
         schoolQuizFractionsButton.addEventListener("click", function () {
           window.location.href = "./school-quiz-fractions/dist/index.html";
+        });
+      }
+
+      if (portfolioButton) {
+        portfolioButton.addEventListener("click", function () {
+          window.location.href = "./portfolio-olga/index.html";
         });
       }
 
