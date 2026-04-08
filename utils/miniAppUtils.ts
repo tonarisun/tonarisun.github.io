@@ -62,8 +62,21 @@ function hasVkLaunchParams(): boolean {
   ].some((key) => searchParams.has(key))
 }
 
+function hasTelegramHints(): boolean {
+  const searchParams = new URLSearchParams(window.location.search)
+  const hasTelegramQueryParams = [
+    "tgWebAppData",
+    "tgWebAppVersion",
+    "tgWebAppPlatform",
+    "tgWebAppThemeParams"
+  ].some((key) => searchParams.has(key))
+
+  if (hasTelegramQueryParams) return true
+  return Boolean((window as any).TelegramWebviewProxy)
+}
+
 export function getMiniAppPlatform(): MiniAppPlatform {
-  if (getTelegramWebApp()) return "telegram"
+  if (getTelegramWebApp() || hasTelegramHints()) return "telegram"
   if (hasVkLaunchParams()) return "vk"
   return "web"
 }
@@ -89,7 +102,7 @@ function initTelegramMiniApp(): void {
 
 export async function initMiniApp(): Promise<void> {
   const platform = getMiniAppPlatform()
-  if (platform === "telegram") {
+  if (platform === "telegram" || getTelegramWebApp()) {
     initTelegramMiniApp()
     return
   }
@@ -173,12 +186,12 @@ async function closeVkMiniApp(): Promise<void> {
 }
 
 export async function closeMiniApp(): Promise<void> {
-  const platform = getMiniAppPlatform()
-  if (platform === "telegram") {
+  if (getTelegramWebApp() || hasTelegramHints()) {
     closeTelegramMiniApp()
     return
   }
 
+  const platform = getMiniAppPlatform()
   if (platform === "vk") {
     await closeVkMiniApp()
     return
@@ -261,6 +274,7 @@ export async function sendSignalToAdmin(data: GenericPayload, apiUrl?: string): 
   await initMiniApp()
 
   const platform = getMiniAppPlatform()
+  const canUseTelegramFallback = Boolean(getTelegramWebApp()?.sendData)
   const userProfile = await getUserProfile()
   const payload = {
     platform,
@@ -280,7 +294,7 @@ export async function sendSignalToAdmin(data: GenericPayload, apiUrl?: string): 
     })
 
     if (!response.ok) {
-      if (platform === "telegram" && fallbackTelegramSendData(payload)) return
+      if (canUseTelegramFallback && fallbackTelegramSendData(payload)) return
 
       const errorText = await response.text()
       throw new Error("Signal API request failed: " + response.status + " " + errorText)
@@ -288,7 +302,7 @@ export async function sendSignalToAdmin(data: GenericPayload, apiUrl?: string): 
 
     await closeMiniApp()
   } catch (error) {
-    if (platform === "telegram" && fallbackTelegramSendData(payload)) return
+    if (canUseTelegramFallback && fallbackTelegramSendData(payload)) return
     throw error
   }
 }

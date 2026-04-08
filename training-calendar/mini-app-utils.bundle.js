@@ -69,8 +69,19 @@ var MiniAppUtils = (() => {
       "sign"
     ].some((key) => searchParams.has(key));
   }
+  function hasTelegramHints() {
+    const searchParams = new URLSearchParams(window.location.search);
+    const hasTelegramQueryParams = [
+      "tgWebAppData",
+      "tgWebAppVersion",
+      "tgWebAppPlatform",
+      "tgWebAppThemeParams"
+    ].some((key) => searchParams.has(key));
+    if (hasTelegramQueryParams) return true;
+    return Boolean(window.TelegramWebviewProxy);
+  }
   function getMiniAppPlatform() {
-    if (getTelegramWebApp()) return "telegram";
+    if (getTelegramWebApp() || hasTelegramHints()) return "telegram";
     if (hasVkLaunchParams()) return "vk";
     return "web";
   }
@@ -91,7 +102,7 @@ var MiniAppUtils = (() => {
   }
   async function initMiniApp() {
     const platform = getMiniAppPlatform();
-    if (platform === "telegram") {
+    if (platform === "telegram" || getTelegramWebApp()) {
       initTelegramMiniApp();
       return;
     }
@@ -163,11 +174,11 @@ var MiniAppUtils = (() => {
     }
   }
   async function closeMiniApp() {
-    const platform = getMiniAppPlatform();
-    if (platform === "telegram") {
+    if (getTelegramWebApp() || hasTelegramHints()) {
       closeTelegramMiniApp();
       return;
     }
+    const platform = getMiniAppPlatform();
     if (platform === "vk") {
       await closeVkMiniApp();
       return;
@@ -238,6 +249,7 @@ var MiniAppUtils = (() => {
   async function sendSignalToAdmin(data, apiUrl) {
     await initMiniApp();
     const platform = getMiniAppPlatform();
+    const canUseTelegramFallback = Boolean(getTelegramWebApp()?.sendData);
     const userProfile = await getUserProfile();
     const payload = {
       platform,
@@ -254,13 +266,13 @@ var MiniAppUtils = (() => {
         body: JSON.stringify(payload)
       });
       if (!response.ok) {
-        if (platform === "telegram" && fallbackTelegramSendData(payload)) return;
+        if (canUseTelegramFallback && fallbackTelegramSendData(payload)) return;
         const errorText = await response.text();
         throw new Error("Signal API request failed: " + response.status + " " + errorText);
       }
       await closeMiniApp();
     } catch (error) {
-      if (platform === "telegram" && fallbackTelegramSendData(payload)) return;
+      if (canUseTelegramFallback && fallbackTelegramSendData(payload)) return;
       throw error;
     }
   }
