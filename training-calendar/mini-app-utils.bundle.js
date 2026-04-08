@@ -60,6 +60,18 @@ var MiniAppUtils = (() => {
     }
     return void 0;
   }
+  function getTelegramWebviewProxy() {
+    const directProxy = window.TelegramWebviewProxy;
+    if (directProxy && typeof directProxy.postEvent === "function") return directProxy;
+    if (!window.parent || window.parent === window) return void 0;
+    try {
+      const parentProxy = window.parent.TelegramWebviewProxy;
+      if (parentProxy && typeof parentProxy.postEvent === "function") return parentProxy;
+    } catch (error) {
+      console.warn("Cannot access parent TelegramWebviewProxy", error);
+    }
+    return void 0;
+  }
   function hasVkLaunchParams() {
     const searchParams = new URLSearchParams(window.location.search);
     return [
@@ -117,10 +129,15 @@ var MiniAppUtils = (() => {
   function closeTelegramMiniApp() {
     const webApp = getTelegramWebApp();
     const closeViaProxy = () => {
-      const webviewProxy = window.TelegramWebviewProxy;
+      const webviewProxy = getTelegramWebviewProxy();
       if (!webviewProxy || typeof webviewProxy.postEvent !== "function") return false;
       try {
         webviewProxy.postEvent("web_app_close");
+        try {
+          webviewProxy.postEvent("web_app_close", "{}");
+        } catch (nestedError) {
+          console.warn("TelegramWebviewProxy close with payload failed", nestedError);
+        }
         return true;
       } catch (error) {
         console.warn("TelegramWebviewProxy close failed", error);
@@ -151,19 +168,19 @@ var MiniAppUtils = (() => {
         return false;
       }
     };
-    const hasClosed = tryClose();
-    setTimeout(() => {
-      if (hasClosed) {
-        tryClose();
-        return;
-      }
-      if (!closeViaProxy())
+    const schedule = [0, 160, 420, 900];
+    schedule.forEach((delay) => {
+      setTimeout(() => {
+        const didClose = tryClose();
+        const didProxyClose = closeViaProxy();
+        if (didClose || didProxyClose) return;
         try {
           window.close();
         } catch (error) {
           console.warn("window.close fallback failed", error);
         }
-    }, 250);
+      }, delay);
+    });
   }
   async function closeVkMiniApp() {
     const bridgeApi = await getVkBridge();
