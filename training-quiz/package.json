@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "description": "Static yoga-style training quiz launcher",
   "scripts": {
-    "build:telegram-utils": "esbuild ../utils/telegramUtils.ts --bundle --platform=browser --format=iife --global-name=TelegramUtils --outfile=dist/telegram-utils.bundle.js",
-    "prestart": "npm run build:telegram-utils",
-    "prestart:local": "npm run build:telegram-utils",
-    "prestart:network": "npm run build:telegram-utils",
+    "build:mini-app-utils": "esbuild ../utils/miniAppUtils.ts --bundle --platform=browser --format=iife --global-name=MiniAppUtils --outfile=dist/mini-app-utils.bundle.js",
+    "prestart": "npm run build:mini-app-utils",
+    "prestart:local": "npm run build:mini-app-utils",
+    "prestart:network": "npm run build:mini-app-utils",
     "start": "node server.js",
     "start:local": "node server.js --host 127.0.0.1 --port 8080",
     "start:network": "node server.js --host 0.0.0.0 --port 8080"
