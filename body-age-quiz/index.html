@@ -6,86 +6,615 @@
   <title>Квиз на возраст тела</title>
   <style>
     :root {
-      color-scheme: dark;
-      --bg: #000000;
-      --text: #ffffff;
-      --btn-bg: #111111;
-      --btn-border: #ffffff;
-      --btn-hover: #ffffff;
-      --btn-hover-text: #000000;
+      color-scheme: light;
+      --bg: #f6f1ea;
+      --surface: #fffdf9;
+      --surface-strong: #ffffff;
+      --text-primary: #2d1d1b;
+      --text-secondary: #7a5a53;
+      --accent: #5b2a46;
+      --accent-contrast: #ffffff;
+      --border: #dcc9bd;
+      --option-selected: #f3e8f0;
+      --option-hover: #f9f2f7;
+      --disabled-bg: #ece6e1;
+      --disabled-text: #9a8f88;
+      --shadow: 0 10px 30px rgba(65, 30, 50, 0.12);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
+      font-family: Georgia, "Times New Roman", serif;
+      -webkit-text-size-adjust: 100%;
     }
 
     body {
       min-height: 100vh;
       background: var(--bg);
-      color: var(--text);
+      color: var(--text-primary);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px 16px;
     }
 
     main {
       width: 100%;
-      max-width: 480px;
+      max-width: 540px;
+    }
+
+    .quiz-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
     }
 
-    button {
+    .quiz-content {
+      padding: 22px 20px 16px;
+      flex: 1;
+    }
+
+    .progress-wrap {
+      margin-bottom: 16px;
+    }
+
+    .question-header {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: var(--surface);
+      padding-bottom: 12px;
+    }
+
+    .question-body {
+      padding-top: 4px;
+      display: flex;
+      flex-direction: column;
+      opacity: 1;
+      transition: opacity 0.22s ease;
+    }
+
+    .content-spacer {
+      flex: 1;
+      min-height: 0;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      font-size: 0.95rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .progress-track {
       width: 100%;
-      border: 2px solid var(--btn-border);
-      border-radius: 15px;
-      background: var(--btn-bg);
-      color: var(--text);
-      padding: 14px 18px;
-      font-size: 1rem;
-      letter-spacing: 0.03em;
-      cursor: pointer;
-      transition: background-color 0.2s ease, color 0.2s ease;
+      height: 6px;
+      border-radius: 999px;
+      background: #ebdfd5;
+      overflow: hidden;
     }
 
-    button:hover {
-      background: var(--btn-hover);
-      color: var(--btn-hover-text);
+    .progress-value {
+      width: 0;
+      height: 100%;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+
+    .title {
+      font-size: 1.62rem;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      line-height: 1.5;
+      font-size: 1.03rem;
+    }
+
+    .question-kicker {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-secondary);
+      font-size: 0.76rem;
+      margin-bottom: 10px;
+    }
+
+    .options {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .option {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-strong);
+      width: 100%;
+      text-align: left;
+      color: var(--text-primary);
+      padding: 14px 14px;
+      cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      font-size: 1rem;
+      line-height: 1.35;
+    }
+
+    .option:hover {
+      background: var(--option-hover);
+      border-color: #c4a7ba;
+      transform: translateY(-1px);
+    }
+
+    .option.is-selected {
+      background: var(--option-selected);
+      border-color: var(--accent);
+    }
+
+    .option-mark {
+      display: inline-block;
+      min-width: 26px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      padding: 14px 20px 20px;
+      border-top: 1px solid #eee2d8;
+      background: #fff9f3;
+      opacity: 1;
+      transition: opacity 0.22s ease;
+    }
+
+    .question-body.is-transitioning,
+    .nav.is-transitioning {
+      opacity: 0;
+    }
+
+    .btn {
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      padding: 12px 14px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+      width: 100%;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-contrast);
+    }
+
+    .btn-primary:hover {
+      background: #4a2239;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--accent);
+      border-color: #b89cae;
+    }
+
+    .btn-secondary:hover {
+      background: #f6edf3;
+    }
+
+    .btn:disabled {
+      border-color: transparent;
+      background: var(--disabled-bg);
+      color: var(--disabled-text);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .result-block {
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: #fff7f2;
+      padding: 14px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 420px) {
+      .title {
+        font-size: 1.4rem;
+      }
+
+      .subtitle,
+      .option,
+      .btn {
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 600px) {
+      html {
+        font-size: 85%;
+      }
+
+      body {
+        padding: 10px 8px;
+      }
+
+      .quiz-content {
+        padding: 16px 14px 12px;
+      }
+
+      .nav {
+        padding: 12px 14px 14px;
+      }
+
+      .title {
+        font-size: 1.3rem;
+        margin-bottom: 10px;
+      }
+
+      .question-kicker {
+        font-size: 0.72rem;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+      }
+
+      .option {
+        padding: 12px 12px;
+        font-size: 0.95rem;
+      }
+
+      .btn {
+        min-height: 44px;
+        padding: 10px 12px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .question-body,
+      .nav {
+        transition: none;
+      }
     }
   </style>
 </head>
 <body>
   <main>
-    <button id="close-mini-app" type="button">Назад</button>
+    <article class="quiz-card">
+      <section class="quiz-content">
+        <div class="question-header">
+          <h1 class="title">Паспорт врёт. Тело - никогда.</h1>
+          <div id="fallback-container"></div>
+          <div class="progress-wrap">
+            <div class="progress-meta"><span id="progress-label"></span></div>
+            <div class="progress-track">
+              <div class="progress-value" id="progress-value"></div>
+            </div>
+          </div>
+        </div>
+        <div class="question-body" id="question-body"></div>
+      </section>
+      <nav class="nav" id="quiz-nav"></nav>
+    </article>
   </main>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <script>
     (function () {
-      const telegram = window.Telegram && window.Telegram.WebApp;
-      const closeButton = document.getElementById("close-mini-app");
+      const telegram = window.Telegram && window.Telegram.WebApp
+      const quizCard = document.querySelector(".quiz-card")
+      const questionBody = document.getElementById("question-body")
+      const quizNav = document.getElementById("quiz-nav")
+      const progressLabel = document.getElementById("progress-label")
+      const progressValue = document.getElementById("progress-value")
+      const fallbackContainer = document.getElementById("fallback-container")
+      const optionMarks = ["A", "B", "C", "D"]
 
       if (telegram) {
-        telegram.ready();
-        telegram.expand();
+        telegram.ready()
+        telegram.expand()
       }
 
-      if (!closeButton) return;
+      if (!quizCard || !questionBody || !quizNav || !progressLabel || !progressValue || !fallbackContainer)
+        return
 
-      closeButton.addEventListener("click", function () {
-        if (telegram) {
-          telegram.sendData("");
-          telegram.close();
-          return;
+      const questions = [
+        {
+          title: "Встань прямо и потянись к полу. Что происходит?",
+          options: [
+            { text: "Ладони касаются пола свободно", score: 1 },
+            { text: "Дотягиваюсь до середины голени", score: 3 },
+            { text: "Едва достаю до колен, чувствую натяжение", score: 5 },
+            { text: "Больно даже наклоняться, давно не пробовала", score: 8 }
+          ],
+          note: "Гибкость показывает состояние соединительной ткани и суставов."
+        },
+        {
+          title: "Ты поднимаешься на 4 этаж пешком. Как ты себя чувствуешь наверху?",
+          options: [
+            { text: "Дыхание ровное, могла бы ещё 4 этажа", score: 1 },
+            { text: "Слегка участилось дыхание, через минуту норма", score: 3 },
+            { text: "Одышка, нужно остановиться", score: 5 },
+            { text: "Предпочитаю лифт, это не обсуждается", score: 8 }
+          ],
+          note: "Выносливость отражает состояние сердечно-сосудистой системы."
+        },
+        {
+          title: "Как ты просыпаешься утром без будильника?",
+          options: [
+            { text: "Легко, отдохнувшей, примерно в одно время", score: 1 },
+            { text: "Нужен будильник, но после него чувствую себя нормально", score: 3 },
+            { text: "Просыпаюсь уставшей, несколько раз за ночь", score: 5 },
+            { text: "Я встаю ещё более разбитой", score: 8 }
+          ],
+          note: "Качество сна напрямую связано со скоростью восстановления."
+        },
+        {
+          title: "Ты активно провела день. Как чувствуешь себя на следующее утро?",
+          options: [
+            { text: "Свежо, никаких последствий", score: 1 },
+            { text: "Лёгкая усталость, к обеду проходит", score: 3 },
+            { text: "Ноги гудят, тело ноет весь день", score: 5 },
+            { text: "Нужно 2-3 дня, чтобы прийти в норму", score: 8 }
+          ],
+          note: "Скорость восстановления является одним из главных биомаркеров."
+        },
+        {
+          title: "Какое у тебя либидо и общий жизненный тонус за последние 3 месяца?",
+          options: [
+            { text: "Высокий, желания и энергия в норме", score: 1 },
+            { text: "Бывают спады, но в целом нормально", score: 3 },
+            { text: "Заметно снизилось, часто нет ни сил, ни желания", score: 5 },
+            { text: "Практически на нуле, это беспокоит", score: 8 }
+          ],
+          note: "Гормональный фон влияет на энергию, метаболизм и темпы старения."
+        },
+        {
+          title: "Как ты реагируешь на мелкие раздражители?",
+          options: [
+            { text: "Спокойно, это мелочи жизни", score: 1 },
+            { text: "Раздражаюсь, но быстро отпускаю", score: 3 },
+            { text: "Завожусь легко, долго не могу успокоиться", score: 5 },
+            { text: "Почти постоянно нахожусь в напряжении", score: 8 }
+          ],
+          note: "Хронический стресс ускоряет старение через высокий уровень кортизола."
+        },
+        {
+          title: "Что ты видишь в зеркале по сравнению с собой в 30 лет?",
+          options: [
+            { text: "Минимальные изменения, форма держится", score: 1 },
+            { text: "Немного больше жира, чуть меньше тонуса", score: 3 },
+            { text: "Заметные изменения: живот, дряблость, общий вид", score: 5 },
+            { text: "Сильно изменилась, почти не узнаю себя прежнюю", score: 8 }
+          ],
+          note: "Состав тела отражает текущее состояние метаболизма."
+        },
+        {
+          title: "Как работает твоя голова к концу рабочего дня?",
+          options: [
+            { text: "Ясно мыслю, могу решать сложные задачи", score: 1 },
+            { text: "К вечеру есть усталость, но справляюсь", score: 3 },
+            { text: "Появляется туман в голове, трудно сосредоточиться", score: 5 },
+            { text: "После 15:00 я практически нефункциональна", score: 8 }
+          ],
+          note: "Когнитивная усталость часто указывает на дефицит восстановления."
+        }
+      ]
+
+      let currentStep = 0
+      let answers = new Array(questions.length).fill(null)
+      let fallbackMessage = ""
+      let lastProgressPercent = 0
+
+      function getProgressPercent() {
+        return ((currentStep + 1) / questions.length) * 100
+      }
+
+      function isCurrentQuestionAnswered() {
+        return answers[currentStep] !== null
+      }
+
+      function scoreTotal() {
+        return answers.reduce(function (sum, value) {
+          return sum + (value === null ? 0 : value)
+        }, 0)
+      }
+
+      function renderHeader(shouldAnimateProgress) {
+        const currentProgressPercent = getProgressPercent()
+        progressLabel.textContent = "Вопрос " + (currentStep + 1) + " из " + questions.length
+        fallbackContainer.innerHTML = fallbackMessage
+          ? '<div class="result-block">' + fallbackMessage + "</div>"
+          : ""
+
+        progressValue.style.width = lastProgressPercent + "%"
+        if (shouldAnimateProgress) {
+          requestAnimationFrame(function () {
+            progressValue.style.width = currentProgressPercent + "%"
+          })
+        } else {
+          progressValue.style.width = currentProgressPercent + "%"
         }
 
-        window.history.back();
-      });
-    })();
+        lastProgressPercent = currentProgressPercent
+      }
+
+      function measureAndLockCardHeight() {
+        const savedStep = currentStep
+        const savedAnswers = answers.slice()
+        const savedFallback = fallbackMessage
+        const savedProgress = lastProgressPercent
+        let maxHeight = 0
+
+        fallbackMessage = ""
+        quizCard.style.minHeight = ""
+
+        for (let stepIndex = 0; stepIndex < questions.length; stepIndex += 1) {
+          currentStep = stepIndex
+          renderHeader(false)
+          renderQuestion()
+          renderNav()
+          const height = quizCard.offsetHeight
+          if (height > maxHeight) maxHeight = height
+        }
+
+        currentStep = savedStep
+        answers = savedAnswers
+        fallbackMessage = savedFallback
+        lastProgressPercent = savedProgress
+
+        if (maxHeight > 0) quizCard.style.minHeight = maxHeight + "px"
+      }
+
+      function renderQuestion() {
+        const question = questions[currentStep]
+        const optionsHtml = question.options
+          .map(function (option, optionIndex) {
+            const isSelected = answers[currentStep] === option.score
+            return (
+              '<button type="button" class="option' +
+              (isSelected ? " is-selected" : "") +
+              '" data-option-index="' +
+              optionIndex +
+              '">' +
+              '<span class="option-mark">' +
+              optionMarks[optionIndex] +
+              "</span>" +
+              option.text +
+              "</button>"
+            )
+          })
+          .join("")
+
+        questionBody.innerHTML =
+          '<h2 class="title">' +
+          question.title +
+          "</h2>" +
+          '<p class="subtitle">' +
+          question.note +
+          "</p>" +
+          '<div class="options" role="radiogroup" aria-label="Варианты ответа">' +
+          optionsHtml +
+          "</div>" +
+          '<div class="content-spacer" aria-hidden="true"></div>'
+
+        const optionButtons = questionBody.querySelectorAll(".option")
+
+        optionButtons.forEach(function (button) {
+          button.addEventListener("click", function () {
+            const selectedIndex = Number(button.getAttribute("data-option-index"))
+            const selectedOption = question.options[selectedIndex]
+            answers[currentStep] = selectedOption.score
+            render(false)
+          })
+        })
+      }
+
+      function sendResultToTelegram(score) {
+        const payload = JSON.stringify({ score: score })
+        if (telegram) {
+          telegram.sendData(payload)
+          telegram.close()
+          return
+        }
+
+        fallbackMessage =
+          "Результат отправляется только внутри Telegram Mini App. Твой итоговый балл: " + score + "."
+        currentStep = questions.length - 1
+        render(false)
+      }
+
+      function handleBack() {
+        if (currentStep === 0) {
+          if (telegram) {
+            telegram.close()
+            return
+          }
+          window.history.back()
+          return
+        }
+
+        currentStep -= 1
+        render(true)
+      }
+
+      function handleNext() {
+        if (!isCurrentQuestionAnswered()) return
+
+        if (currentStep === questions.length - 1) {
+          sendResultToTelegram(scoreTotal())
+          return
+        }
+
+        currentStep += 1
+        render(true)
+      }
+
+      function renderNav() {
+        const isLastQuestion = currentStep === questions.length - 1
+        const nextLabel = isLastQuestion ? "Узнать результат" : "Далее"
+        const isDisabled = !isCurrentQuestionAnswered()
+        const backButtonHtml =
+          currentStep === 0
+            ? ""
+            : '<button type="button" class="btn btn-secondary" id="back-button">Назад</button>'
+
+        quizNav.innerHTML =
+          backButtonHtml +
+          '<button type="button" class="btn btn-primary" id="next-button" ' +
+          (isDisabled ? "disabled" : "") +
+          ">" +
+          nextLabel +
+          "</button>"
+
+        const backButton = document.getElementById("back-button")
+        const nextButton = document.getElementById("next-button")
+        if (backButton) backButton.addEventListener("click", handleBack)
+        if (nextButton) nextButton.addEventListener("click", handleNext)
+      }
+
+      function render(shouldAnimate) {
+        if (!shouldAnimate) {
+          renderHeader(true)
+          renderQuestion()
+          renderNav()
+          return
+        }
+
+        questionBody.classList.add("is-transitioning")
+        quizNav.classList.add("is-transitioning")
+
+        setTimeout(function () {
+          renderHeader(true)
+          renderQuestion()
+          renderNav()
+          requestAnimationFrame(function () {
+            questionBody.classList.remove("is-transitioning")
+            quizNav.classList.remove("is-transitioning")
+          })
+        }, 160)
+      }
+
+      measureAndLockCardHeight()
+      render(false)
+    })()
   </script>
 </body>
 </html>
