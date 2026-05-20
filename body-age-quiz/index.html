@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Квиз на возраст тела</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #000000;
+      --text: #ffffff;
+      --btn-bg: #111111;
+      --btn-border: #ffffff;
+      --btn-hover: #ffffff;
+      --btn-hover-text: #000000;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    main {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: center;
+    }
+
+    button {
+      width: 100%;
+      border: 2px solid var(--btn-border);
+      border-radius: 15px;
+      background: var(--btn-bg);
+      color: var(--text);
+      padding: 14px 18px;
+      font-size: 1rem;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--btn-hover);
+      color: var(--btn-hover-text);
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <button id="close-mini-app" type="button">Назад</button>
+  </main>
+
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    (function () {
+      const telegram = window.Telegram && window.Telegram.WebApp;
+      const closeButton = document.getElementById("close-mini-app");
+
+      if (telegram) {
+        telegram.ready();
+        telegram.expand();
+      }
+
+      if (!closeButton) return;
+
+      closeButton.addEventListener("click", function () {
+        if (telegram) {
+          telegram.sendData("");
+          telegram.close();
+          return;
+        }
+
+        window.history.back();
+      });
+    })();
+  </script>
+</body>
+</html>

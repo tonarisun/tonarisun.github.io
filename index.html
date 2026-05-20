@@ -171,6 +171,7 @@
       <button id="go-to-botlab" type="button">БОТЛАБ</button>
       <button id="go-to-lead-for-quiz" type="button">Лид за квиз</button>
       <button id="go-to-training-quiz" type="button">Квиз по тренировкам</button>
+      <button id="go-to-body-age-quiz" type="button">Квиз на возраст тела</button>
       <button id="go-to-training-calendar" type="button">Календарь записи</button>
       <button id="go-to-school-quiz-fractions" type="button">Квиз по дробям</button>
       <button id="go-to-portfolio" type="button">Портфолио Ольга</button>
@@ -192,6 +193,7 @@
       const botlabButton = document.getElementById("go-to-botlab");
       const leadForQuizButton = document.getElementById("go-to-lead-for-quiz");
       const trainingQuizButton = document.getElementById("go-to-training-quiz");
+      const bodyAgeQuizButton = document.getElementById("go-to-body-age-quiz");
       const trainingCalendarButton = document.getElementById("go-to-training-calendar");
       const schoolQuizFractionsButton = document.getElementById("go-to-school-quiz-fractions");
       const portfolioButton = document.getElementById("go-to-portfolio");
@@ -223,6 +225,12 @@
       if (trainingQuizButton) {
         trainingQuizButton.addEventListener("click", function () {
           window.location.href = "./training-quiz/dist/index.html";
+        });
+      }
+
+      if (bodyAgeQuizButton) {
+        bodyAgeQuizButton.addEventListener("click", function () {
+          window.location.href = "./body-age-quiz/index.html";
         });
       }
 
