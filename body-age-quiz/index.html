@@ -328,6 +328,7 @@
       const progressValue = document.getElementById("progress-value")
       const fallbackContainer = document.getElementById("fallback-container")
       const optionMarks = ["A", "B", "C", "D"]
+      const SIGNAL_API_URL = "https://web-production-b2434.up.railway.app"
 
       if (telegram) {
         telegram.ready()
@@ -538,29 +539,15 @@
       }
 
       async function sendResultToTelegram(score) {
-        if (!miniAppUtils || typeof miniAppUtils.sendSignalToAdmin !== "function") {
-          fallbackMessage =
-            "Сервис отправки недоступен. Твой итоговый балл: " + score + "."
-          currentStep = questions.length - 1
-          render(false)
-          return
-        }
+        if (!miniAppUtils || typeof miniAppUtils.sendSignalToAdmin !== "function")
+          throw new Error("Mini app utils are not available")
 
-        try {
-          await miniAppUtils.sendSignalToAdmin({
-            service_type: "body_age_quiz",
-            action: "submit_body_age_quiz",
-            quiz_data: {
-              score: score
-            }
-          })
-        } catch (error) {
-          console.error("Ошибка отправки результата:", error)
-          fallbackMessage =
-            "Не удалось отправить результат. Твой итоговый балл: " + score + "."
-          currentStep = questions.length - 1
-          render(false)
-        }
+        await miniAppUtils.sendSignalToAdmin(
+          {
+            score: score
+          },
+          SIGNAL_API_URL
+        )
       }
 
       function handleBack() {
@@ -581,7 +568,22 @@
         if (!isCurrentQuestionAnswered()) return
 
         if (currentStep === questions.length - 1) {
-          await sendResultToTelegram(scoreTotal())
+          const nextButton = document.getElementById("next-button")
+          if (nextButton) {
+            nextButton.disabled = true
+            nextButton.textContent = "ОТПРАВКА..."
+          }
+
+          try {
+            await sendResultToTelegram(scoreTotal())
+            if (nextButton) nextButton.textContent = "ОТПРАВЛЕНО"
+          } catch (error) {
+            console.error("Ошибка отправки результата квиза:", error)
+            if (nextButton) {
+              nextButton.disabled = false
+              nextButton.textContent = "Узнать результат"
+            }
+          }
           return
         }
 
