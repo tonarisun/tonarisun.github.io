@@ -316,9 +316,11 @@
   </main>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="../training-calendar/mini-app-utils.bundle.js"></script>
   <script>
     (function () {
       const telegram = window.Telegram && window.Telegram.WebApp
+      const miniAppUtils = window.MiniAppUtils
       const quizCard = document.querySelector(".quiz-card")
       const questionBody = document.getElementById("question-body")
       const quizNav = document.getElementById("quiz-nav")
@@ -330,6 +332,14 @@
       if (telegram) {
         telegram.ready()
         telegram.expand()
+      }
+      if (miniAppUtils && typeof miniAppUtils.initMiniAppUtils === "function") {
+        miniAppUtils.initMiniAppUtils()
+      }
+      if (miniAppUtils && typeof miniAppUtils.initMiniApp === "function") {
+        miniAppUtils.initMiniApp().catch(function (error) {
+          console.warn("Mini app init failed:", error)
+        })
       }
 
       if (!quizCard || !questionBody || !quizNav || !progressLabel || !progressValue || !fallbackContainer)
@@ -527,18 +537,30 @@
         })
       }
 
-      function sendResultToTelegram(score) {
-        const payload = JSON.stringify({ score: score })
-        if (telegram) {
-          telegram.sendData(payload)
-          telegram.close()
+      async function sendResultToTelegram(score) {
+        if (!miniAppUtils || typeof miniAppUtils.sendSignalToAdmin !== "function") {
+          fallbackMessage =
+            "Сервис отправки недоступен. Твой итоговый балл: " + score + "."
+          currentStep = questions.length - 1
+          render(false)
           return
         }
 
-        fallbackMessage =
-          "Результат отправляется только внутри Telegram Mini App. Твой итоговый балл: " + score + "."
-        currentStep = questions.length - 1
-        render(false)
+        try {
+          await miniAppUtils.sendSignalToAdmin({
+            service_type: "body_age_quiz",
+            action: "submit_body_age_quiz",
+            quiz_data: {
+              score: score
+            }
+          })
+        } catch (error) {
+          console.error("Ошибка отправки результата:", error)
+          fallbackMessage =
+            "Не удалось отправить результат. Твой итоговый балл: " + score + "."
+          currentStep = questions.length - 1
+          render(false)
+        }
       }
 
       function handleBack() {
@@ -555,11 +577,11 @@
         render(true)
       }
 
-      function handleNext() {
+      async function handleNext() {
         if (!isCurrentQuestionAnswered()) return
 
         if (currentStep === questions.length - 1) {
-          sendResultToTelegram(scoreTotal())
+          await sendResultToTelegram(scoreTotal())
           return
         }
 
